@@ -1,4 +1,5 @@
 /*
+Leetcode 644:
 Given an array consisting of n integers, find the contiguous subarray whose length is greater than or equal to k that has the maximum average value. And you need to output the maximum average value.
 
 Example 1:
@@ -13,6 +14,10 @@ Note:
 1 <= k <= n <= 10,000.
 Elements of the given array will be in range [-10,000, 10,000].
 The answer with the calculation error less than 10-5 will be accepted.
+
+Solution:
+Language: C++
+Tag: preSum<Subarray>, Binary Search
 */
 
 class Solution {
@@ -27,9 +32,11 @@ public:
             max_val = max(max_val, nums[i]);
         }
         double left = (double)min_val, right = (double)max_val, eps = 1e-5;
+        double *preSum = new double[nums.size() + 1];
+        preSum[0] = 0.0;
         while (left + eps < right) {
             double mid = (left + right) / 2;
-            if (isValid(nums, k, mid) == true) {
+            if (isValid(nums, k, mid, preSum) == true) {
                 left = mid;
             } else {
                 right = mid;
@@ -38,15 +45,15 @@ public:
         return left;
     }
     
-    bool isValid(vector<int> &nums, int k, double mid) {
-        double *preSum = new double[nums.size() + 1];
-        preSum[0] = 0.0;
+    bool isValid(vector<int> &nums, int k, double mid, double *preSum) {
         double min_pre = 0.0;
         for (int i = 0; i < nums.size(); ++i) {
+                // preSum[j + 1] - preSum[i] (- mid * (j - i + 1)-->already included)
             preSum[i + 1] = preSum[i] + (double)nums[i] - mid;
             if (i >= k) {
                 min_pre = min(min_pre, preSum[i - k + 1]); // note: i - k + 1
             }
+                // Sum{i to j} = preSum[j + 1] - preSum[i]
             if (i >= k - 1 && preSum[i + 1] - min_pre >= 0) {
                 return true;
             }
