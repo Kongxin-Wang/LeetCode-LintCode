@@ -20,7 +20,7 @@ public:
     #define min(a, b) (a < b ? a : b)
     #define max(a, b) (a > b ? a : b)
     double findMaxAverage(vector<int>& nums, int k) {
-        // 1. binary search -- O(nlog(max_val − min_val)) time + O(1) space
+        // 1. binary search -- O(nlog(max_val − min_val)) time + O(n) space
         int min_val = INT_MAX, max_val = INT_MIN;
         for (int i = 0; i < nums.size(); ++i) {
             min_val = min(min_val, nums[i]);
