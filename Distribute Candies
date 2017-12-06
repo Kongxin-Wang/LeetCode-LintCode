@@ -1,0 +1,150 @@
+/*
+LeetCode 575:
+Given an integer array with even length, where different numbers in this array represent different kinds of candies. Each number means one candy of the corresponding kind. You need to distribute these candies equally in number to brother and sister. Return the maximum number of kinds of candies the sister could gain.
+
+Example 1:
+Input: candies = [1,1,2,2,3,3]
+Output: 3
+Explanation:
+There are three different kinds of candies (1, 2 and 3), and two candies for each kind.
+Optimal distribution: The sister has candies [1,2,3] and the brother has candies [1,2,3], too. 
+The sister has three different kinds of candies. 
+Example 2:
+Input: candies = [1,1,2,3]
+Output: 2
+Explanation: For example, the sister has candies [2,3] and the brother has candies [1,1]. 
+The sister has two different kinds of candies, the brother has only one kind of candies. 
+Note:
+
+The length of the given array is in range [2, 10,000], and will be even.
+The number in given array is in range [-100,000, 100,000].
+
+
+Solution:
+Language: C++
+Tag: hashset sort 2Pointer
+*/
+
+class Solution {
+public:
+    #define min(a, b) (a < b ? a : b)
+    int distributeCandies(vector<int>& candies) {
+        /*
+        // 1. hashset: O(n) space + O(n) time
+        int max_cand = candies.size() / 2;
+        int num_kinds = 0;
+        unordered_set<int> hash;
+        for (int i = 0; i < candies.size(); ++i) {
+            if (hash.find(candies[i]) != hash.end()) {
+                continue;
+            }
+            hash.insert(candies[i]);
+            ++num_kinds;
+        }
+        return min(num_kinds, max_cand);
+        */
+        
+        // 2. Sort + 2 pointer: O(nlogn) time + O(1) space
+        int size = candies.size();
+        int num_kinds = 0;
+        sort(candies.begin(), candies.end(), less<int>());
+            //quicksort(candies, 0, size - 1);
+            //heapsort(candies);
+            //int *temp = new int[size];
+            //mergesort(candies, 0, size - 1, temp);
+        int i = 0;
+        while (i < size) {
+            int j = i + 1; 
+            while (j < size && candies[j] == candies[i]) {
+                ++j;
+            }
+            ++num_kinds;
+            i = j;
+        }
+        return min(num_kinds, size / 2);
+    }
+    
+    void quicksort(vector<int> &nums, int start, int end) {
+        if (start >= end) {
+            return;
+        }
+        int left = start, right = end, pivot = nums[(left + right) / 2];
+        while (left <= right) {
+            while (left <= right && nums[left] < pivot) {
+                ++left;
+            }
+            while (left <= right && nums[right] > pivot) {
+                --right;
+            }
+            if (left <= right) {
+                swap(nums[left++], nums[right--]);
+            }
+        }
+        quicksort(nums, start, right);
+        quicksort(nums, left, end);
+    }
+    
+    void mergesort(vector<int> &nums, int start, int end, int *temp) {
+        if (start >= end) {
+            return;
+        }
+        int mid = start + (end - start) / 2;
+        mergesort(nums, start, mid, temp);
+        mergesort(nums, mid + 1, end, temp);
+        merge(nums, start, end, temp);
+    }
+    
+    void merge(vector<int> &nums, int start, int end, int *temp) {
+        int mid = start + (end - start) / 2;
+        int left = start, right = mid + 1, idx = start;
+        while (left <= mid && right <= end) {
+            if (nums[left] <= nums[right]) {
+                temp[idx++] = nums[left++];
+            } else {
+                temp[idx++] = nums[right++];
+            }
+        }
+        while (left <= mid) {
+            temp[idx++] = nums[left++];
+        }
+        while (right <= end) {
+            temp[idx++] = nums[right++];
+        }
+        for (int i = start; i <= end; ++i) {
+            nums[i] = temp[i];
+        }
+    }
+    
+    void heapsort(vector<int> &nums) {
+        int size = nums.size();
+        for (int i = (size - 1) / 2; i >= 0; --i) {
+            siftdown(nums, i, size);
+        }
+        while (size > 0) {
+            swap(nums[0], nums[--size]);
+            siftdown(nums, 0, size);
+        }
+        int left = 0, right = nums.size() - 1;
+        while (left < right) {
+            swap(nums[left++], nums[right--]);
+        }
+    }
+    
+    void siftdown(vector<int> &nums, int father, int size) {
+        while (father < size) {
+            int min_idx = father;
+            int left = father * 2 + 1, right = left + 1;
+            if (left < size && nums[left] < nums[min_idx]) {
+                min_idx = left;
+            }
+            if (right < size && nums[right] < nums[min_idx]) {
+                min_idx = right;
+            }
+            if (father == min_idx) {
+                break;
+            }
+            swap(nums[father], nums[min_idx]);
+            father = min_idx;
+        }
+    }
+};
