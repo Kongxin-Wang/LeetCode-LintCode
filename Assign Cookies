@@ -1,0 +1,144 @@
+/*
+LeetCode: 455
+Assume you are an awesome parent and want to give your children some cookies. But, you should give each child at most one cookie. Each child i has a greed factor gi, which is the minimum size of a cookie that the child will be content with; and each cookie j has a size sj. If sj >= gi, we can assign the cookie j to the child i, and the child i will be content. Your goal is to maximize the number of your content children and output the maximum number.
+
+Note:
+You may assume the greed factor is always positive. 
+You cannot assign more than one cookie to one child.
+
+Example 1:
+Input: [1,2,3], [1,1]
+
+Output: 1
+
+Explanation: You have 3 children and 2 cookies. The greed factors of 3 children are 1, 2, 3. 
+And even though you have 2 cookies, since their size is both 1, you could only make the child whose greed factor is 1 content.
+You need to output 1.
+Example 2:
+Input: [1,2], [1,2,3]
+
+Output: 2
+
+Explanation: You have 2 children and 3 cookies. The greed factors of 2 children are 1, 2. 
+You have 3 cookies and their sizes are big enough to gratify all of the children, 
+You need to output 2.
+
+
+Solution:
+Language: C++
+Tag: greedy sort 
+Just assign the cookies starting from the child with less greediness to maximize the number of happy children
+*/
+
+class Solution {
+public:
+    int findContentChildren(vector<int>& g, vector<int>& s) {
+        // 1. sort -- O(nlogn) time + O(1) space
+        sort(g.begin(), g.end(), less<int>());
+        sort(s.begin(), s.end(), less<int>());
+            //quicksort(g, 0, g.size() - 1);
+            //heapsort(s);
+            //int *temp = new int[s.size()];
+            //mergesort(s, 0, s.size() - 1, temp);
+        int g_size = g.size(), s_size = s.size();
+        int idx_g = 0, res = 0;
+        for (int i = 0; i < s_size; ++i) {
+            if (s[i] >= g[idx_g]) {
+                ++idx_g;
+                ++res;
+            }
+            if (idx_g == g_size) {
+                break;
+            }
+        }
+        return res;
+    }
+    
+    // O(nlogn) time<average, worst--O(n^2) time> + O(1) space -- unstable
+    void quicksort(vector<int> &nums, int start, int end) {
+        if (start >= end) {
+            return;
+        }
+        int left = start, right = end, pivot = nums[(start + end) / 2];
+        while (left <= right) {
+            while (left <= right && nums[left] < pivot) {
+                ++left;
+            }
+            while (left <= right && nums[right] > pivot) {
+                --right;
+            }
+            if (left <= right) {
+                swap(nums[left++], nums[right--]);
+            }
+        }
+        quicksort(nums, start, right);
+        quicksort(nums, left, end);
+    }
+    
+    // O(nlogn) time<worst and average> + O(1) space -- unstable
+    void heapsort(vector<int> &nums) {
+        int size = nums.size();
+        for (int i = (size - 1) / 2; i >= 0; --i) {
+            siftdown(nums, i, size);
+        }
+        while (size > 0) {
+            swap(nums[0], nums[--size]);
+            siftdown(nums, 0, size);
+        }
+        int left = 0, right = nums.size() - 1;
+        while (left < right) {
+            swap(nums[left++], nums[right--]);
+        }
+    }
+    
+    // O(logn) time 
+    void siftdown(vector<int> &nums, int father, int size) {
+        while (father < size) {
+            int min_idx = father;
+            int left = father * 2 + 1, right = left + 1;
+            if (left < size && nums[left] < nums[min_idx]) {
+                min_idx = left;
+            }
+            if (right < size && nums[right] < nums[min_idx]) {
+                min_idx = right;
+            }
+            if (father == min_idx) {
+                break;
+            }
+            swap(nums[father], nums[min_idx]);
+            father = min_idx;
+        }
+    }
+    
+    // O(nlogn) time<worst, average> + O(n) space -- stable
+    void mergesort(vector<int> &nums, int start, int end, int *temp) {
+        if (start >= end) {
+            return;
+        }
+        int mid = start + (end - start) / 2;
+        mergesort(nums, start, mid, temp);
+        mergesort(nums, mid + 1, end, temp);
+        merge(nums, start, end, temp);
+    }
+    
+    void merge(vector<int> &nums, int start, int end, int *temp) {
+        int mid = start + (end - start) / 2;
+        int left = start, right = mid + 1, idx = start;
+        while (left <= mid && right <= end) {
+            if (nums[left] <= nums[right]) {
+                temp[idx++] = nums[left++];
+            } else {
+                temp[idx++] = nums[right++];
+            }
+        }
+        while (left <= mid) {
+            temp[idx++] = nums[left++];
+        }
+        while (right <= end) {
+            temp[idx++] = nums[right++];
+        }
+        for (int i = start; i <= end; ++i) {
+            nums[i] = temp[i];
+        }
+    }
+};
