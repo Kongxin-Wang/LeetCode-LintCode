@@ -1,0 +1,46 @@
+/*
+LeetCode: 540
+Given a sorted array consisting of only integers where every element appears twice except for one element which appears once. Find this single element that appears only once.
+
+Example 1:
+Input: [1,1,2,3,3,4,4,8,8]
+Output: 2
+Example 2:
+Input: [3,3,7,7,10,11,11]
+Output: 10
+Note: Your solution should run in O(log n) time and O(1) space.
+
+
+Solution:
+Language: C++
+Tag: Binary Search
+*/
+
+class Solution {
+public:
+    int singleNonDuplicate(vector<int>& nums) {
+        /*
+        // 1. ^ -- O(n) time + O(1) space -- also useful for unsorted array
+        int tar = 0;
+        for (int i = 0; i < nums.size(); ++i) {
+            tar ^= nums[i];
+        }
+        return tar;
+        */
+        
+        // 2. O(logn) time + O(1) space -- binary search
+        int start = 0, end = nums.size() - 1;
+        while (start < end) {
+            int mid = start + (end - start) / 2;
+            if (mid % 2 == 1) { // can only appear in even position
+                --mid;
+            }
+            if (nums[mid] != nums[mid + 1]) {
+                end = mid;
+            } else {
+                start = mid + 2;
+            }
+        }
+        return nums[end]; 
+    }
+};
