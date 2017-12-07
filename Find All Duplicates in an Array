@@ -1,0 +1,196 @@
+/*
+LeetCode 442:
+Given an array of integers, 1 ≤ a[i] ≤ n (n = size of array), some elements appear twice and others appear once.
+
+Find all the elements that appear twice in this array.
+
+Could you do it without extra space and in O(n) runtime?
+
+Example:
+Input:
+[4,3,2,7,8,2,3,1]
+
+Output:
+[2,3]
+
+Solution:
+Language: C++
+Tag: mapping sort hashmap
+*/
+
+class Solution {
+public:
+    vector<int> findDuplicates(vector<int>& nums) {
+        /*
+        // 1. hashmap -- O(n) time + O(n) space
+        vector<int> res;
+        unordered_set<int> hash;
+        for (int i = 0; i < nums.size(); ++i) {
+            if (hash.find(nums[i]) != hash.end()) {
+                res.push_back(nums[i]);
+            } else {
+                hash.insert(nums[i]);
+            }
+        }
+        return res;
+        */
+        
+        /*
+        // 2. O(n^2) time + O(1) space <only twice appear> -- Time Limit Exceed
+        vector<int> res;
+        for (int i = 0; i < nums.size(); ++i) {
+            for (int j = i + 1; j < nums.size(); ++j) {
+                if (nums[i] == nums[j]) {
+                    res.push_back(nums[i]);
+                    break;
+                }
+            }
+        }
+        return res;
+        */
+        
+        /*
+        // 3. sort -- O(nlogn) time + O(1) space
+        vector<int> res;
+        sort(nums.begin(), nums.end(), less<int>());
+        //quicksort(nums, 0, nums.size() - 1);
+        //heapsort(nums);
+        //int *temp = new int[nums.size()];
+        //mergesort(nums, 0, nums.size() - 1, temp);
+        for (int i = 1; i < nums.size(); ++i) {
+            if (nums[i] == nums[i - 1]) {
+                res.push_back(nums[i]);
+            }
+        }
+        return res;
+        */
+        
+        /*
+        // 4. O(n) time + O(1) space -- 1 ≤ a[i] ≤ n  找nums[i]和nums[nums[i] - 1]的关系
+        vector<int> res;
+        for (int i = 0; i < nums.size(); ++i) {
+            nums[abs(nums[i]) - 1] *= -1; // since only twice
+            if (nums[abs(nums[i]) - 1] > 0) {
+                res.push_back(abs(nums[i]));
+            }
+        }
+        return res;
+        */
+        
+        /*
+        // 5.
+        int i = 0;
+        while (i < nums.size()) {
+            if (nums[i] != nums[nums[i] - 1]) {
+                swap(nums[i], nums[nums[i] - 1]);
+            } else {
+                ++i;
+            }
+        }
+        vector<int> res;
+        for (int i = 0; i < nums.size(); ++i) {
+            if (nums[i] != i + 1) {
+                res.push_back(nums[i]); // since only twice
+            }
+        }
+        return res;
+        */
+        
+        // 6.
+        int n = nums.size();
+        for (int i = 0; i < n; ++i) {
+            nums[(nums[i] - 1) % n] += n;
+        }
+        vector<int> res;
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] > 2 * n) {
+                res.push_back(i + 1);
+            }
+        }
+        return res;
+    }
+    
+    void quicksort(vector<int> &nums, int start, int end) {
+        if (start >= end) {
+            return;
+        }
+        int left = start, right = end, pivot = nums[(start + end) / 2];
+        while (left <= right) {
+            while (left <= right && nums[left] < pivot) {
+                ++left;
+            }
+            while(left <= right && nums[right] > pivot) {
+                --right;
+            }
+            if (left <= right) {
+                swap(nums[left++], nums[right--]);
+            }
+        }
+        quicksort(nums, start, right);
+        quicksort(nums, left, end);
+    }
+    
+    void heapsort(vector<int> &nums) {
+        int size = nums.size();
+        for (int i = (size - 1) / 2; i >= 0; --i) {
+            siftdown(nums, i, size);
+        }
+        while (size > 0) {
+            swap(nums[0], nums[--size]);
+            siftdown(nums, 0, size);
+        }
+        int left = 0, right = nums.size() - 1;
+        while (left < right) {
+            swap(nums[left++], nums[right--]);
+        }
+    }
+    
+    void siftdown(vector<int> &nums, int father, int size) {
+        while (father < size) {
+            int min_idx = father;
+            int left = father * 2 + 1, right = father * 2 + 2;
+            if (left < size && nums[left] < nums[min_idx]) {
+                min_idx = left;
+            }
+            if (right < size && nums[right] < nums[min_idx]) {
+                min_idx = right;
+            }
+            if (father == min_idx) {
+                break;
+            }
+            swap(nums[father], nums[min_idx]);
+            father = min_idx;
+        }
+    }
+    
+    void mergesort(vector<int> &nums, int start, int end, int *temp) {
+        if (start >= end) {
+            return;
+        }
+        int mid = start + (end - start) / 2;
+        mergesort(nums, start, mid, temp);
+        mergesort(nums, mid + 1, end, temp);
+        merge(nums, start, end, temp);
+    }
+    
+    void merge(vector<int> &nums, int start, int end, int *temp) {
+        int mid = start + (end - start) / 2;
+        int left = start, right = mid + 1, idx = start;
+        while (left <= mid && right <= end) {
+            if (nums[left] <= nums[right]) {
+                temp[idx++] = nums[left++];
+            } else {
+                temp[idx++] = nums[right++];
+            }
+        }
+        while (left <= mid) {
+            temp[idx++] = nums[left++];
+        }
+        while (right <= end) {
+            temp[idx++] = nums[right++];
+        }
+        for (int i = start; i <= end; ++i) {
+            nums[i] = temp[i];
+        }
+    }
+};
