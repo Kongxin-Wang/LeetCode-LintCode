@@ -1,0 +1,106 @@
+/*
+LeetCode 633:
+Given a non-negative integer c, your task is to decide whether there're two integers a and b such that a2 + b2 = c.
+
+Example 1:
+Input: 5
+Output: True
+Explanation: 1 * 1 + 2 * 2 = 5
+Example 2:
+Input: 3
+Output: False
+
+Solution:
+Language: C++
+Tag: binary search 2Pointer
+*/
+
+class Solution {
+public:
+    bool judgeSquareSum(int c) {
+        /*
+        // 1. brute force -- Time Limit Exceed -- O(c) time
+        for (int i = 0; i * i <= c; ++i) {
+            for (int j = i; j * j <= c; ++j) {
+                if (i * i + j * j == c) {
+                    return true;
+                }
+            }
+        }
+        return false;
+        */
+        
+        /*
+        // 2. Time Limit Exceed -- O(c) time ???
+        for (int i = 0; i * i <= c; ++i) {
+            int tmp = c - i * i;
+            if (tmp < i) {
+                break;
+            }
+            for (int j = 1; tmp > 0; j += 2) {
+                tmp -= j;
+            }
+            if (tmp == 0) {
+                return true;
+            }
+        }
+        return false;
+        */
+        
+        /*
+        // 3. 
+        for (int i = 0; i * i <= c; ++i) {
+            int tmp = c - i * i;
+            int root = (int)sqrt(tmp);
+            if (root < i) {
+                break;
+            }
+            if (root * root == tmp) {
+                return true;
+            }
+        }
+        return false;
+        */
+        
+        /*
+        // 4. O(sqrt(c) * log(c)) time 
+        for (int i = 0; i * i <= c; ++i) {
+            int start = i, end = c; // or end = (int)sqrt(c)
+            int target = c - i * i;
+            if (target < i) {
+                break;
+            }
+            while (start + 1 < end) {
+                int mid = start + (end - start) / 2;
+                long tmp = (long) mid * (long) mid;
+                if (tmp <= (long)target) {
+                    start = mid;
+                } else {
+                    end = mid;
+                }
+            }
+            if (start * start == target || end * end == target) {
+                return true;
+            }
+        }
+        return false;
+        */
+        
+        /*
+        // 5. two pointer -- O(sqrt(c)) time
+        int left = 0, right = (int) sqrt(c);
+        while (left <= right) {
+            if (left * left + right * right < c) {
+                ++left;
+            } else if (left * left + right * right > c) {
+                --right;
+            } else {
+                return true;
+            }
+        }
+        return false;
+        */
+        
+        // 6. Fermat ???
+    }
+};
