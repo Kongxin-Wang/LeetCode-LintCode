@@ -1,0 +1,36 @@
+/*
+LeetCode 172:
+Given an integer n, return the number of trailing zeroes in n!.
+
+Note: Your solution should be in logarithmic time complexity.
+
+Solution:
+Language: C++
+Tag: math
+hint: 10 -> 5 * 2 -> count num of factor 5 from 1 to n 
+wrong ans -- cannot only consider the last digit -- ex: 25! --> 25 * 24 = 600 instead of 5 * 24 = 120
+*/
+
+class Solution {
+public:
+    int trailingZeroes(int n) {
+        if (n <= 0) {
+            return 0;
+        }
+        /*
+        // 1. count num of factor 5 from 1 to n
+        int res = 0;
+        long tmp = 5; // may cause integer overflow
+        while (n / tmp >= 1) {
+            res += (n / tmp);
+            tmp *= 5;
+        }
+        return res;
+        */
+        
+        /*
+        // 2. recursion
+        return (n / 5) + trailingZeroes(n / 5);
+        */
+    }
+};
