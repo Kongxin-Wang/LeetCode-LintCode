@@ -1,0 +1,181 @@
+/*
+LeetCode 16:
+Given an array S of n integers, find three integers in S such that the sum is closest to a given number, target. Return the sum of the three integers. You may assume that each input would have exactly one solution.
+
+    For example, given array S = {-1 2 1 -4}, and target = 1.
+
+    The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
+
+Solution:
+Language: C++
+Tag: Sort 2Pointer
+*/
+
+class Solution {
+public:
+    int threeSumClosest(vector<int>& nums, int target) {
+        /*
+        // 1. bruteforce -- O(n^3) time + O(1) space
+        int diff = INT_MAX;
+        int res = 0;
+        for (int i = 0; i < nums.size(); ++i) {
+            for (int j = i + 1; j < nums.size(); ++j) {
+                for (int k = j + 1; k < nums.size(); ++k) {
+                    if (abs(nums[i] + nums[j] + nums[k] - target) < diff) {
+                        res = nums[i] + nums[j] + nums[k];
+                        diff = abs(res - target);
+                    }
+                }
+            }
+        }
+        return res;
+        */
+        
+        /*
+        // 2. sort + 2P -- O(n^2) time + O(1) space
+        sort(nums.begin(), nums.end(), less<int>());
+        int res = 0, diff = INT_MAX;
+        for (int i = 0; i < nums.size() - 2; ++i) {
+            two_sum(nums, i + 1, diff, res, target - nums[i]);
+        }
+        return res;
+        */
+        
+        // 3. modify of 2 -- O(n^2) time + O(1) space
+        if (nums.size() < 3) {
+            return INT_MIN;
+        }
+        sort(nums.begin(), nums.end(), less<int>());
+        //quicksort(nums, 0, nums.size() - 1);
+        //heapsort(nums);
+        //int *temp = new int[nums.size()];
+        //mergesort(nums, 0, nums.size() - 1, temp);
+        int res = nums[0] + nums[1] + nums[2];
+        for (int i = 0; i < nums.size() - 2; ++i) {
+            int left = i + 1, right = nums.size() - 1; 
+            while (left < right) {
+                int sum = nums[left] + nums[right] + nums[i];
+                if (abs(sum - target) < abs(res - target)) {
+                    res = sum;
+                }
+                if (sum > target) {
+                    --right;
+                } else if (sum < target) {
+                    ++left;
+                } else {
+                    break;
+                }
+            }
+        }
+        return res;
+    }
+    
+    void mergesort(vector<int> &nums, int start, int end, int *temp) {
+        if (start >= end) {
+            return;
+        }
+        int mid = (start + end) / 2;
+        mergesort(nums, start, mid, temp);
+        mergesort(nums, mid + 1, end, temp);
+        merge(nums, start, end, temp);
+    }
+    
+    void merge(vector<int> &nums, int start, int end, int *temp) {
+        int mid = (start + end) / 2;
+        int left = start, right = mid + 1, idx = start;
+        while (left <= mid && right <= end) {
+            if (nums[left] <= nums[right]) {
+                temp[idx++] = nums[left++]; 
+            } else {
+                temp[idx++] = nums[right++];
+            }
+        }
+        while (left <= mid) {
+            temp[idx++] = nums[left++];
+        }
+        while (right <= end) {
+            temp[idx++] = nums[right++];
+        }
+        for (int i = start; i <= end; ++i) {
+            nums[i] = temp[i];
+        }
+    }
+
+    void quicksort(vector<int> &nums, int start, int end) {
+        if (start >= end) {
+            return;
+        }
+        int left = start, right = end, pivot = nums[(start + end) / 2];
+        while (left <= right) {
+            while (left <= right && nums[left] < pivot) {
+                ++left;
+            }
+            while (left <= right && nums[right] > pivot) {
+                --right;
+            }
+            if (left <= right) {
+                swap(nums[left++], nums[right--]);
+            }
+        }
+        quicksort(nums, start, right);
+        quicksort(nums, left, end);
+    }
+    
+    void heapsort(vector<int> &nums) {
+        int size = nums.size();
+        for (int i = (size - 1) / 2; i >= 0; --i) {
+            siftdown(nums, i, size);
+        }
+        while (size > 0) {
+            swap(nums[0], nums[--size]);
+            siftdown(nums, 0, size);
+        }
+        int left = 0, right = nums.size() - 1;
+        while (left < right) {
+            swap(nums[left++], nums[right--]);
+        }
+    }
+    
+    void siftdown(vector<int> &nums, int father, int size) {
+        while (father < size) {
+            int min_idx = father;
+            int left = father * 2 + 1, right = father * 2 + 2;
+            if (left < size && nums[left] < nums[min_idx]) {
+                min_idx = left;
+            }
+            if (right < size && nums[right] < nums[min_idx]) {
+                min_idx = right;
+            }
+            if (father == min_idx) {
+                break;
+            }
+            swap(nums[father], nums[min_idx]);
+            father = min_idx;
+        }
+    }
+    
+    void two_sum(vector<int> &nums, int left, int &diff, int &res, int target) {
+        int first = left - 1;
+        int right = nums.size() - 1;
+        while (left < right) {
+            if (nums[left] + nums[right] < target) {
+                if (target - nums[left] - nums[right] < diff) {
+                    diff = target - nums[left] - nums[right];
+                    res = nums[left] + nums[right] + nums[first];
+                }
+                ++left;
+            } else if (nums[left] + nums[right] > target) {
+                if (nums[left] + nums[right] - target < diff) {
+                    diff = nums[left] + nums[right] - target;
+                    res = nums[right] + nums[left] + nums[first];
+                }
+                --right;
+            } else {
+                diff = 0;
+                res = nums[right] + nums[left] + nums[first];
+                break;
+            }
+        }
+    }
+    
+};
