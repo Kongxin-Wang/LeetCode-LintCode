@@ -1,0 +1,50 @@
+/*
+LeetCode 290:
+Given a pattern and a string str, find if str follows the same pattern.
+
+Here follow means a full match, such that there is a bijection between a letter in pattern and a non-empty word in str.
+
+Examples:
+pattern = "abba", str = "dog cat cat dog" should return true.
+pattern = "abba", str = "dog cat cat fish" should return false.
+pattern = "aaaa", str = "dog cat cat dog" should return false.
+pattern = "abba", str = "dog dog dog dog" should return false.
+Notes:
+You may assume pattern contains only lowercase letters, and str contains lowercase letters separated by a single space.
+
+Solution:
+Language: C++
+Tag: hashmap
+*/
+
+class Solution {
+public:
+    bool wordPattern(string pattern, string str) {
+        /*
+        // 1. O() time + O() space
+        unordered_map<char, string> hash;
+        unordered_map<string, char> hash2;
+        int idx_p = 0, idx_s = 0;
+        while (idx_s < str.length() && idx_p < pattern.length()) {
+            int i = idx_s;
+            while (i < str.length() && str[i] != ' ') {
+                ++i;
+            }
+            string tmp = str.substr(idx_s, i - idx_s);
+            char c = pattern[idx_p];
+            if (hash2.find(tmp) == hash2.end() && hash.find(c) == hash.end()) {
+                hash[c] = tmp; 
+                hash2[tmp] = c;
+            } else if ((hash.find(c) != hash.end() && hash[c] != tmp)
+                        || (hash2.find(tmp) != hash2.end() && hash2[tmp] != c)){
+                return false;
+            }
+            idx_s = i + 1;
+            ++idx_p;
+        }
+        return (idx_p == pattern.length() && idx_s >= str.length());
+        */
+        
+        
+    }
+};
