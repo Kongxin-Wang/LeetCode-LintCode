@@ -1,0 +1,87 @@
+/*
+LeetCode 238:
+Given an array of n integers where n > 1, nums, return an array output such that output[i] is equal to the product of all the elements of nums except nums[i].
+
+Solve it without division and in O(n).
+
+For example, given [1,2,3,4], return [24,12,8,6].
+
+Follow up:
+Could you solve it with constant space complexity? (Note: The output array does not count as extra space for the purpose of space complexity analysis.)
+
+Solution:
+Language: C++
+Tag:
+*/
+
+
+class Solution {
+public:
+    vector<int> productExceptSelf(vector<int>& nums) {
+        if (nums.empty()) {
+            return vector<int>();
+        }
+        /*
+        // 1. O(n^2) time + O(1) space
+        int size = nums.size();
+        vector<int> res(size, 0);
+        for (int i = 0; i < size; ++i) {
+            int prod = 1;
+            for (int j = 0; j < size; ++j) {
+                if (i == j) {
+                    continue;
+                }
+                prod *= nums[j];
+            }
+            res[i] = prod;
+        }
+        return res;
+        */
+        
+        /*
+        // 2. O(n) time with division + O(1) space
+        int size = nums.size();
+        int count_0s = 0, idx = -1, prod = 1;
+        for (int i = 0; i < size; ++i) {
+            prod *= nums[i];
+            if (nums[i] == 0) {
+                ++count_0s;
+                idx = i;
+            }
+        }
+        vector<int> res(size, 0);
+        if (count_0s == 1) {
+            prod = 1;
+            for (int i = 0; i < size; ++i) {
+                if (i == idx) {
+                    continue;
+                }
+                prod *= nums[i];
+            }
+            res[idx] = prod;
+        } else if (count_0s == 0) { 
+            for (int i = 0; i < size; ++i) {
+                res[i] = prod / nums[i];
+            }
+        }
+        return res;
+        */
+        
+        // 3. O(n) time without division ???? + O(1) space
+        /*
+The idea is simply. The product basically is calculated using the numbers before the current number and the numbers after the current number. Thus, we can scan the array twice. First, we calcuate the running product of the part before the current number. Second, we calculate the running product of the part after the current number through scanning from the end of the array.
+        */
+        int size = nums.size();
+        vector<int> res(size, 0);
+        res[0] = 1;
+        for (int i = 1; i < size; ++i) {
+            res[i] = res[i - 1] * nums[i - 1];
+        }
+        int right = 1;
+        for (int i = size - 1; i >= 0; --i) {
+            res[i] *= right;
+            right *= nums[i];
+        }
+        return res;
+    }
+};
