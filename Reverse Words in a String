@@ -1,0 +1,83 @@
+/*
+LeetCode 151:
+Given an input string, reverse the string word by word.
+
+For example,
+Given s = "the sky is blue",
+return "blue is sky the".
+
+Update (2015-02-12):
+For C programmers: Try to solve it in-place in O(1) space.
+
+Solution:
+Language: C++
+Tag: 
+*/
+void reverseWords(char *s) {
+    if (s == NULL || strlen(s) == 0) {
+        return;
+    }
+    /*
+    // 1. O(n) space
+    int n = strlen(s);
+    char *str = (char*)malloc(sizeof(char) * (n + 1));
+    int idx2 = 0, idx1 = n - 1;
+    while (idx1 >= 0) {
+        while(idx1 >= 0 && s[idx1] == ' ') {
+            --idx1;
+        }
+        if (idx1 < 0) {
+            break;
+        }
+        int right = idx1;
+        if (idx2 != 0) {
+            str[idx2++] = ' ';
+        }
+        while (idx1 >= 0 && s[idx1] != ' ') {
+            --idx1;
+        }
+        for (int left = idx1 + 1; left <= right; ++left) {
+            str[idx2++] = s[left];
+        }
+    }
+    for (int i = 0; i < idx2; ++i) {
+        s[i] = str[i];
+    }
+    free(str);
+    s[idx2] = '\0';
+    */
+    
+    // 2. O(1) space + O(3n) time
+    int idx = 0, size = strlen(s);
+    int i = 0;
+    while (i < size) {
+        while (i < size && s[i] == ' ') {
+            ++i;
+        }
+        if (i != size && idx != 0) {
+            s[idx++] = ' ';
+        }
+        while (i < size && s[i] != ' ') {
+            s[idx++] = s[i++];
+        }
+    }
+    s[idx] = '\0';
+    reverse(s, 0, idx - 1);
+    i = 0;
+    while (i < idx) {
+        int left = i;
+        while (i < idx && s[i] != ' ') {
+            ++i;
+        }
+        reverse(s, left, i - 1);
+        ++i;
+    }
+}
+
+void reverse(char *s, int left, int right) {
+    while (left < right) {
+        char c = s[left];
+        s[left++] = s[right];
+        s[right--] = c;
+    }
+} 
