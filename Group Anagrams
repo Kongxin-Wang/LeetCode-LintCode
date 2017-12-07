@@ -1,0 +1,141 @@
+/*
+LeetCode 49:
+Given an array of strings, group anagrams together.
+
+For example, given: ["eat", "tea", "tan", "ate", "nat", "bat"], 
+Return:
+
+[
+  ["ate", "eat","tea"],
+  ["nat","tan"],
+  ["bat"]
+]
+Note: All inputs will be in lower-case.
+
+Solution:
+Language: C++
+Tag: hashmap sort
+*/
+
+class Solution {
+public:
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        if (strs.empty()) {
+            return vector<vector<string>>();
+        }
+        /*
+        // 1. brute force -- Time Limit Exceed -- O(size) space + O(size^2 len) time
+        vector<vector<string>> res;
+        int size = strs.size();
+        bool *visited = new bool[size];
+        for (int i = 0; i < size; ++i) {
+            visited[i] = false;
+        }
+        for (int i = 0; i < size; ++i) {
+            if (visited[i] == true) {
+                continue;
+            }
+            visited[i] = true;
+            vector<string> group({strs[i]});
+            for (int j = i + 1; j < size; ++j) {
+                if (isAnagram(strs[i], strs[j]) == true) {
+                    group.push_back(strs[j]);
+                    visited[j] = true;
+                }
+            }
+            res.push_back(group);
+        }
+        return res;
+        */
+        
+        /*
+        // 2. sort -- O(size * len) space + O(lenloglen * size) time
+        unordered_map<string, vector<string>> hash;
+        for (int i = 0; i < strs.size(); ++i) {
+            string tmp = strs[i];
+            quicksort(tmp, 0, tmp.size() - 1);
+            if (hash.find(tmp) == hash.end()) {
+                vector<string> group({strs[i]});
+                hash[tmp] = group;
+            } else {
+                hash[tmp].push_back(strs[i]);
+            }
+        }
+        vector<vector<string>> res;
+        for (pair<string, vector<string>> item : hash) {
+            res.push_back(item.second);
+        } 
+        return res;
+        */
+        
+        // 3. O(size * len) space + O(len * size) time
+        unordered_map<string, vector<string>> hashmap;
+        int *hash = new int[26];
+        for (int i = 0; i < strs.size(); ++i) {
+            for (int j = 0; j < 26; ++j) {
+                hash[j] = 0;
+            }
+            for (int j = 0; j < strs[i].length(); ++j) {
+                ++hash[strs[i][j] - 'a'];
+            }
+            string tmp = "";
+            for (int j = 0; j < 26; ++j) {
+                tmp += ('#' + to_string(hash[j]));
+            }
+            if (hashmap.find(tmp) == hashmap.end()) {
+                vector<string> group({strs[i]});
+                hashmap[tmp] = group;
+            } else {
+                hashmap[tmp].push_back(strs[i]);
+            }
+        }
+        vector<vector<string>> res;
+        for (pair<string, vector<string>> item : hashmap) {
+            res.push_back(item.second);
+        }
+        return res;
+    }
+    
+    bool isAnagram(string &s, string &t) {
+        if (s.length() != t.length()) {
+            return false;
+        }
+        int *hash = new int[256];
+        int len = s.length();
+        for (int i = 0; i < 256; ++i) {
+            hash[i] = 0;
+        }
+        for (int i = 0; i < len; ++i) {
+            ++hash[s[i]];
+            --hash[t[i]];
+        }
+        for (int i = 0; i < 256; ++i) {
+            if (hash[i] != 0) {
+                free(hash);
+                return false;
+            }
+        }
+        free(hash);
+        return true;
+    }
+    
+    void quicksort(string &str, int start, int end) {
+        if (start >= end) {
+            return;
+        }
+        int left = start, right = end, pivot = str[(start + end) / 2];
+        while (left <= right) {
+            while (left <= right && str[left] < pivot) {
+                ++left;
+            }
+            while (left <= right && str[right] > pivot) {
+                --right;
+            }
+            if (left <= right) {
+                swap(str[left++], str[right--]);
+            }
+        }
+        quicksort(str, start, right);
+        quicksort(str, left, end);
+    }
+};
