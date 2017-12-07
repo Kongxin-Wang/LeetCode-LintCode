@@ -1,0 +1,72 @@
+/*
+LeetCode 17: https://leetcode.com/problems/letter-combinations-of-a-phone-number/description/
+Given a digit string, return all possible letter combinations that the number could represent.
+
+Input:Digit string "23"
+Output: ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
+
+Solution:
+Language: C++
+Tag: DFS  BFS
+*/
+
+class Solution {
+public:
+    /*
+     * @param digits: A digital string
+     * @return: all posible letter combinations
+     */
+    vector<string> letterCombinations(string &digits) {
+        if (digits.empty()) {
+            return vector<string>();
+        }
+        /*
+        // 1. DFS -- O(4^n) time
+        //vector<string> lib({"abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"}); 
+        string lib[8] = {"abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+        vector<string> res;
+        string combination = "";
+        helper(digits, 0, combination, res, lib);
+        return res;
+        */
+        
+        // 2. BFS -- O(4^n) time
+        string lib[8] = {"abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+        queue<string> que;
+        que.push("");
+        int idx = 0;
+        vector<string> res;
+        while (!que.empty()) {
+            int queSize = que.size();
+            for (int i = 0; i < queSize; ++i) {
+                string tmp = que.front();
+                que.pop();
+                if (idx == digits.length()) {
+                    res.push_back(tmp);
+                    continue;
+                }
+                for (int j = 0; j < lib[digits[idx] - '2'].length(); ++j) {
+                    tmp += lib[digits[idx] - '2'][j];
+                    que.push(tmp);
+                    tmp.pop_back();
+                }
+            }
+            ++idx;
+        }
+        return res;
+    }
+    
+    void helper(string &digits, int idx, string &combination, 
+                vector<string> &res, string *lib) { // vector<string> &lib
+        if (idx == digits.length()) {
+            res.push_back(combination);
+            return;
+        }          
+        int j = digits[idx] - '2';
+        for (int i = 0; i < lib[j].length(); ++i) { // since excluded '0' '1'
+            combination += lib[j][i];
+            helper(digits, idx + 1, combination, res, lib);
+            combination.pop_back();
+        }
+    }
+};
