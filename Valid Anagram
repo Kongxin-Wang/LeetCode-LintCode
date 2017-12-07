@@ -1,0 +1,73 @@
+/*
+LeetCode 242:
+Given two strings s and t, write a function to determine if t is an anagram of s.
+
+For example,
+s = "anagram", t = "nagaram", return true.
+s = "rat", t = "car", return false.
+
+Note:
+You may assume the string contains only lowercase alphabets.
+
+Follow up:
+What if the inputs contain unicode characters? How would you adapt your solution to such case?
+
+
+Solution:
+Language: C++
+Tag: sort hashmap
+*/
+
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+        if (s.length() != t.length()) {
+            return false;
+        }
+        /*
+        // 1. sort -- O(nlogn) time + O(1) space
+        int len = s.length();
+        quicksort(s, 0, len - 1);
+        quicksort(t, 0, len - 1);
+        return (s == t);
+        */
+        
+        // 2. hash -- O(n) time + O(256) space
+        int *hash = new int[256];
+        int len = s.length();
+        for (int i = 0; i < 256; ++i) {
+            hash[i] = 0;
+        }
+        for (int i = 0; i < len; ++i) {
+            ++hash[s[i]];
+            --hash[t[i]];
+        }
+        for (int i = 0; i < 256; ++i) {
+            if (hash[i] != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    void quicksort(string &str, int start, int end) {
+        if (start >= end) {
+            return;
+        }
+        int left = start, right = end, pivot = str[(start + end) / 2];
+        while (left <= right) {
+            while (left <= right && str[left] < pivot) {
+                ++left;
+            }
+            while (left <= right && str[right] > pivot) {
+                --right;
+            }
+            if (left <= right) {
+                swap(str[left++], str[right--]);
+            }
+        }
+        quicksort(str, start, right);
+        quicksort(str, left, end);
+    }
+};
+
