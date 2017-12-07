@@ -1,0 +1,209 @@
+/*
+LeetCode 126:
+Given two words (beginWord and endWord), and a dictionary's word list, find all shortest transformation sequence(s) from beginWord to endWord, such that:
+
+Only one letter can be changed at a time
+Each transformed word must exist in the word list. Note that beginWord is not a transformed word.
+For example,
+
+Given:
+beginWord = "hit"
+endWord = "cog"
+wordList = ["hot","dot","dog","lot","log","cog"]
+Return
+  [
+    ["hit","hot","dot","dog","cog"],
+    ["hit","hot","lot","log","cog"]
+  ]
+Note:
+Return an empty list if there is no such transformation sequence.
+All words have the same length.
+All words contain only lowercase alphabetic characters.
+You may assume no duplicates in the word list.
+You may assume beginWord and endWord are non-empty and are not the same.
+UPDATE (2017/1/20):
+The wordList parameter had been changed to a list of strings (instead of a set of strings). Please reload the code definition to get the latest changes.
+
+Solution:
+Language: C++
+Tag: BFS + DFS
+*/
+
+class Solution {
+public:
+    vector<vector<string>> findLadders(string beginWord, string endWord, vector<string>& wordList) {
+        /*
+        // 1. BFS + DFS -- Time Limit Exceed
+        unordered_set<string> dict;
+        for (string word : wordList) {
+            dict.insert(word);
+        }
+        vector<vector<string>> res;
+        if (dict.find(endWord) == dict.end()) {
+            return res;
+        }
+            // BFS
+        int len = BFS_helper(beginWord, endWord, dict);
+        if (len == 0) {
+            return res;
+        }
+            // DFS
+        vector<string> trans;
+        trans.push_back(beginWord);
+        DFS_helper(beginWord, endWord, trans, dict, res, 1, len);
+        return res;
+        */
+        
+        // 2. BFS + DFS --> store neighbors and distance
+        unordered_set<string> dict;
+        unordered_map<string, int> distances;
+        unordered_map<string, vector<string>> neighbors;
+        for (string word : wordList) {
+            dict.insert(word);
+        }
+        vector<vector<string>> res;
+        if (dict.find(endWord) == dict.end()) {
+            return res;
+        }
+        distances[beginWord] = 1;
+        BFS_helper1(beginWord, endWord, dict, distances, neighbors);
+        if (distances.find(endWord) == distances.end()) {
+            return res;
+        }
+        vector<string> trans({beginWord});
+        DFS_helper1(endWord, trans, distances, neighbors, res);
+        return res;
+    }
+    
+    void DFS_helper1(string &endWord, vector<string> &trans, unordered_map<string, int> &distances,
+                     unordered_map<string, vector<string>> &neighbors, vector<vector<string>> &res) {
+        if (trans.size() == distances[endWord] && trans.back() == endWord) {
+            res.push_back(trans);
+            return;
+        }
+        string curWord = trans.back();
+        for (string nextWord : neighbors[curWord]) {
+            if (distances[nextWord] != distances[curWord] + 1) {
+                continue;
+            }
+            trans.push_back(nextWord);
+            DFS_helper1(endWord, trans, distances, neighbors, res);
+            trans.pop_back();
+        }
+    }
+    
+    void BFS_helper1(string &beginWord, string &endWord, unordered_set<string> &dict,
+                unordered_map<string, int> &distances, unordered_map<string, vector<string>> &neighbors) {
+        queue<string> que;
+        que.push(beginWord);
+        while (!que.empty()) {
+            int size = que.size();
+            for (int i = 0; i < size; ++i) {
+                string curWord = que.front();
+                que.pop();
+                for (string nextWord : getNextWords(curWord, dict, distances, neighbors)) {
+                    que.push(nextWord);
+                }
+            }
+        }
+        return;
+    }
+    
+    vector<string> getNextWords(string &curWord, unordered_set<string> &dict, unordered_map<string, int> &distances,
+                                unordered_map<string, vector<string>> &neighbors) {
+        vector<string> neighbor;
+        vector<string> res;
+        for (int i = 0; i < curWord.length(); ++i) {
+            string nextWord = curWord;
+            for (char c = 'a'; c <= 'z'; ++c) {
+                if (nextWord[i] == c) {
+                    continue;
+                }
+                nextWord[i] = c;
+                if (dict.find(nextWord) != dict.end()) {
+                    neighbor.push_back(nextWord);
+                } else {
+                    continue;
+                }
+                if (distances.find(nextWord) != distances.end()) {
+                    continue;
+                }
+                distances[nextWord] = distances[curWord] + 1;
+                res.push_back(nextWord);
+            }
+        }
+        neighbors[curWord] = neighbor;
+        return res;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    void DFS_helper(string &beginWord, string &endWord, vector<string> &trans,
+                    unordered_set<string> &dict, vector<vector<string>> &res, 
+                    int step, int len) {
+        if (step == len) {
+            res.push_back(trans);
+            return;
+        }
+        string curWord = trans.back();
+        for (int i = 0; i < curWord.length(); ++i) {
+            string nextWord = curWord;
+            for (char c = 'a'; c <= 'z'; ++c) {
+                if (curWord[i] == c) {
+                    continue;
+                }
+                nextWord[i] = c;
+                if (nextWord == endWord && step == len - 1) {
+                    trans.push_back(nextWord);
+                    DFS_helper(beginWord, endWord, trans, dict, res, step + 1, len);
+                    trans.pop_back();
+                    return;
+                }
+                if (dict.find(nextWord) != dict.end() && step < len - 1) {
+                    trans.push_back(nextWord);
+                    dict.erase(nextWord);
+                    DFS_helper(beginWord, endWord, trans, dict, res, step + 1, len);
+                    dict.insert(nextWord);
+                    trans.pop_back();
+                }
+            }
+        }
+    }
+    
+    int BFS_helper(string &beginWord, string &endWord, unordered_set<string> dict) {
+        int step = 1;
+        queue<string> que;
+        que.push(beginWord);
+        while (!que.empty()) {
+            int size = que.size();
+            ++step;
+            for (int i = 0; i < size; ++i) {
+                string curWord = que.front();
+                que.pop();
+                for (int j = 0; j < curWord.length(); ++j) {
+                    string nextWord = curWord;
+                    for (char c = 'a'; c <= 'z'; ++c) {
+                        if (curWord[j] == c) {
+                            continue;
+                        }
+                        nextWord[j] = c;
+                        if (nextWord == endWord) {
+                            return step;
+                        }
+                        if (dict.find(nextWord) != dict.end()) {
+                            que.push(nextWord);
+                            dict.erase(nextWord);
+                        }
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+};
