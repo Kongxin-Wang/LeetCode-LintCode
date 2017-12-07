@@ -1,0 +1,98 @@
+/*
+LeetCode 496:
+You are given two arrays (without duplicates) nums1 and nums2 where nums1’s elements are subset of nums2. Find all the next greater numbers for nums1's elements in the corresponding places of nums2.
+
+The Next Greater Number of a number x in nums1 is the first greater number to its right in nums2. If it does not exist, output -1 for this number.
+
+Example 1:
+Input: nums1 = [4,1,2], nums2 = [1,3,4,2].
+Output: [-1,3,-1]
+Explanation:
+    For number 4 in the first array, you cannot find the next greater number for it in the second array, so output -1.
+    For number 1 in the first array, the next greater number for it in the second array is 3.
+    For number 2 in the first array, there is no next greater number for it in the second array, so output -1.
+Example 2:
+Input: nums1 = [2,4], nums2 = [1,2,3,4].
+Output: [3,-1]
+Explanation:
+    For number 2 in the first array, the next greater number for it in the second array is 3.
+    For number 4 in the first array, there is no next greater number for it in the second array, so output -1.
+Note:
+All elements in nums1 and nums2 are unique.
+The length of both nums1 and nums2 would not exceed 1000.
+
+Solution:
+Language: 
+Tag: stack hashmap
+*/
+
+class Solution {
+public:
+    vector<int> nextGreaterElement(vector<int>& findNums, vector<int>& nums) {
+        if (findNums.empty()) {
+            return vector<int>();
+        }
+        /*
+        // 1. (no duplicate) -- brute force -- O(m * n) time + O(1) space
+        vector<int> res;
+        for (int i = 0; i < findNums.size(); ++i) {
+            bool find = false;
+            for (int j = 0; j < nums.size(); ++j) {
+                if (nums[j] == findNums[i]) {
+                    find = true;
+                    continue;
+                }
+                if (find == true && nums[j] > findNums[i]) {
+                    res.push_back(nums[j]);
+                    break;
+                }
+            }
+            if (res.size() != i + 1) {
+                res.push_back(-1);
+            }
+        }
+        return res;
+        */
+        
+        /*
+        // 2. O(m * n) time + O(n) space
+        unordered_map<int, int> hash;
+        for (int i = 0; i < nums.size(); ++i) {
+            hash[nums[i]] = i;
+        }
+        vector<int> res;
+        for (int i = 0; i < findNums.size(); ++i) {
+            for (int j = hash[findNums[i]] + 1; j < nums.size(); ++j) {
+                if (nums[j] > findNums[i]) {
+                    res.push_back(nums[j]);
+                    break;
+                }
+            }
+            if (res.size() != i + 1) {
+                res.push_back(-1);
+            }
+        }
+        return res;
+        */
+        
+        // 3. monotonous stack -- O(m + n) time + O(n) space
+        unordered_map<int, int> hashmap;
+        stack<int> myStack;
+        for (int i = 0; i < nums.size(); ++i) {
+            while (!myStack.empty() && nums[i] > myStack.top()) {
+                hashmap[myStack.top()] = nums[i];
+                myStack.pop();
+            }
+            myStack.push(nums[i]);
+        }
+        vector<int> res;
+        for (int i = 0; i < findNums.size(); ++i) {
+            if (hashmap.find(findNums[i]) == hashmap.end()) {
+                res.push_back(-1);
+            } else {
+                res.push_back(hashmap[findNums[i]]);
+            }
+        }
+        return res;
+    }
+};
