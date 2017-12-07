@@ -1,0 +1,58 @@
+/*
+LeetCode 347:
+Given a non-empty array of integers, return the k most frequent elements.
+
+For example,
+Given [1,1,1,2,2,3] and k = 2, return [1,2].
+
+Note: 
+You may assume k is always valid, 1 ≤ k ≤ number of unique elements.
+Your algorithm's time complexity must be better than O(n log n), where n is the array's size.
+
+
+Solution:
+Language: C++
+Tag: heap hashmap
+*/
+
+class myCMP {
+public:
+    bool operator() (pair<int, int> &A, pair<int, int> &B) {
+        return A.second > B.second;
+    }
+};
+
+class Solution {
+public:
+    vector<int> topKFrequent(vector<int>& nums, int k) {
+        /*
+        // 1. hashmap + minHeap -- O(nlogk) time + O(n) space
+        unordered_map<int, int> hash;
+        for (int num : nums) {
+            if (hash.find(num) != hash.end()) {
+                ++hash[num];
+            } else {
+                hash[num] = 1;
+            }
+        }
+        priority_queue<pair<int, int>, vector<pair<int, int>>, myCMP> minHeap;
+        for (pair<int, int> item : hash) {
+            if (minHeap.size() == k && minHeap.top().second < item.second) {
+                minHeap.pop();
+                minHeap.push(item);
+            } else if (minHeap.size() < k) {
+                minHeap.push(item);
+            }
+        }
+        vector<int> res;
+        while (!minHeap.empty()) {
+            res.push_back(minHeap.top().first);
+            minHeap.pop();
+        }
+        return res;
+        */
+        
+        // 2. bucket sort ????
+
+    }
+};
