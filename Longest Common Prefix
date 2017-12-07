@@ -1,0 +1,170 @@
+/*
+LeetCode 14:
+Write a function to find the longest common prefix string amongst an array of strings.
+
+Solution:
+Language: C++
+Tag: Divide & Conquer  binary search  Trie
+*/
+
+class TrieNode {
+public:
+    bool isStr;
+    int count;
+    unordered_map<char, TrieNode*> children;
+    TrieNode() {
+        count = 0;
+        isStr = false;
+    }
+};
+
+class TrieTree {
+private:
+    TrieNode *root;
+public:
+    TrieTree() {
+        root = new TrieNode;
+    }
+    
+    void insert(string &word) {
+        if (word.empty()) {
+            return;
+        }
+        TrieNode *node = root;
+        for (int i = 0; i < word.length(); ++i) {
+            if (node->children.find(word[i]) == node->children.end()) {
+                node->children[word[i]] = new TrieNode;
+            }
+            node = node->children[word[i]];
+            ++node->count;
+        }
+        node->isStr = true;
+    }
+    
+    string search_common_prefix(int size) {
+        string res = "";
+        TrieNode *node = root;
+        bool out = false;
+        while (!out) {
+            out = true;
+            for (pair<char, TrieNode*> item : node->children) {
+                if (item.second->count == size) {
+                    res += item.first;
+                    node = item.second;
+                    out = false;
+                    break;
+                }
+            }
+        }
+        return res;
+    }
+};
+
+
+class Solution {
+public:
+    #define min(a, b) (a < b ? a : b)
+    string longestCommonPrefix(vector<string>& strs) {
+        /*
+        // 1. brute force -- O(1) space + O(S) time, where S is the sum of all characters in all strings
+        if (strs.empty()) {
+            return "";
+        }
+        string res = "";
+        int j = 0;
+        for (int i = 0; i < strs[0].length(); ++i) {
+            for (j = 1; j < strs.size(); ++j) {
+                if (strs[j][i] != strs[0][i]) {
+                    break;
+                }
+            }
+            if (j == strs.size()) {
+                res += strs[0][i];
+            } else {
+                break;
+            }
+        }
+        return res;
+        */
+        
+        /*
+        // 2. Divide & Conquer -- time ? space ?<cannot be O(1), consider the stack space>
+        return helper(strs, 0, strs.size() - 1);
+        */
+        
+        /*
+        // 3. Binary Search -- O(s log(n)) time + O(1) space
+        if (strs.empty()) {
+            return "";
+        }
+        int min_len = INT_MAX;
+        for (int i = 0; i < strs.size(); ++i) {
+            min_len = min(min_len, strs[i].length());
+        }
+        if (min_len == 0) {
+            return "";
+        }
+        int start = 1, end = min_len;
+        while (start + 1 < end) {
+            int mid = (start + end) / 2;
+            if (isValid(strs, mid) == true) {
+                start = mid;
+            } else {
+                end = mid;
+            }
+        }
+        if (isValid(strs, end) == true) {
+            return strs[0].substr(0, end);
+        }
+        if (isValid(strs, start) == true) {
+            return strs[0].substr(0, start);
+        }
+        return "";
+        */
+        
+        // 4. Trie -- Time ? + Space ?
+        if (strs.empty()) {
+            return "";
+        }
+        if (strs.size() == 1) {
+            return strs[0];
+        }
+        TrieTree *tree = new TrieTree;
+        for (int i = 0; i < strs.size(); ++i) {
+            tree->insert(strs[i]);
+        }
+        return tree->search_common_prefix(strs.size());
+    }
+    
+    bool isValid(vector<string> &strs, int len) {
+        for (int i = 0; i < len; ++i) {
+            for (int j = 1; j < strs.size(); ++j) {
+                if (strs[0][i] != strs[j][i]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    string helper(vector<string> &strs, int start, int end) {
+        if (start > end) {
+            return "";
+        }
+        if (start == end) {
+            return strs[start];
+        }
+        int mid = (start + end) / 2;
+        string left = helper(strs, start, mid);
+        string right = helper(strs, mid + 1, end);
+        int idx = 0;
+        while (idx < left.length() && idx < right.length()) {
+            if (left[idx] == right[idx]) {
+                ++idx;
+            } else {
+                break;
+            }
+        }
+        return left.substr(0, idx);
+    }
+};
