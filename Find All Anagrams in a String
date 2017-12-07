@@ -1,0 +1,102 @@
+/*
+LeetCode 438:
+Given a string s and a non-empty string p, find all the start indices of p's anagrams in s.
+
+Strings consists of lowercase English letters only and the length of both strings s and p will not be larger than 20,100.
+
+The order of output does not matter.
+
+Example 1:
+
+Input:
+s: "cbaebabacd" p: "abc"
+
+Output:
+[0, 6]
+
+Explanation:
+The substring with start index = 0 is "cba", which is an anagram of "abc".
+The substring with start index = 6 is "bac", which is an anagram of "abc".
+Example 2:
+
+Input:
+s: "abab" p: "ab"
+
+Output:
+[0, 1, 2]
+
+Explanation:
+The substring with start index = 0 is "ab", which is an anagram of "ab".
+The substring with start index = 1 is "ba", which is an anagram of "ab".
+The substring with start index = 2 is "ab", which is an anagram of "ab".
+
+
+Solution:
+Language: C++
+Tag: 2Pointer
+*/
+
+class Solution {
+public:
+    vector<int> findAnagrams(string s, string p) {
+        if (p.empty() || s.empty() || s.length() < p.length()) {
+            return vector<int>();
+        }
+        /*
+        // 1. O(mn) time 
+        vector<int> res;
+        int *hash = new int[256];
+        int len_s = s.length(), len_p = p.length();
+        for (int i = 0; i <= len_s - len_p; ++i) {
+            string src = s.substr(i, len_p);
+            if (isAnagram(src, p, hash) == true) {
+                res.push_back(i);
+            }
+        }
+        return res;
+        */
+        
+        // 2. two pointer -- O(n) time 
+        vector<int> res;
+        int n = s.length(), m = p.length();
+        int *hash = new int[256];
+        for (int i = 0; i < 256; ++i) {
+            hash[i] = 0;
+        }
+        for (int i = 0; i < m; ++i) {
+            hash[p[i]]++;
+        }
+        int left = 0, right = 0, count = m;
+        while (right < n) {
+            if (hash[s[right++]]-- >= 1) {
+                --count;
+            }
+            if (count == 0) {
+                res.push_back(left);
+            }
+            if (right - left == m && ++hash[s[left++]] >= 1) {
+                   ++count;
+            }
+        }
+        return res;
+    }
+    
+    bool isAnagram(string s, string p, int *hash) {
+        if (s.length() != p.length()) {
+            return false;
+        }
+        for (int i = 0; i < 256; ++i) {
+            hash[i] = 0;
+        }
+        for (int i = 0; i < s.length(); ++i) {
+            hash[s[i]]++;
+            hash[p[i]]--;
+        }
+        for (int i = 0; i < 256; ++i) {
+            if (hash[i] != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+};
