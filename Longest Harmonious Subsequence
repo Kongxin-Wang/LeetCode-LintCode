@@ -1,0 +1,64 @@
+/*
+LeetCode 594:
+We define a harmonious array is an array where the difference between its maximum value and its minimum value is exactly 1.
+
+Now, given an integer array, you need to find the length of its longest harmonious subsequence among all its possible subsequences.
+
+Example 1:
+Input: [1,3,2,2,5,2,3,7]
+Output: 5
+Explanation: The longest harmonious subsequence is [3,2,2,2,3].
+Note: The length of the input array will not exceed 20,000.
+
+Solution:
+Language: C++
+Tag: hashmap
+*/
+
+class Solution {
+public:
+    #define max(a, b) (a > b ? a : b)
+    int findLHS(vector<int>& nums) {
+        /*
+        // 1. brute force -- O(n^2) time + O(1) space -- Time Limit Exceed
+        int res = 0;
+        for (int i = 0; i < nums.size(); ++i) {
+            int tmp = 1;
+            bool has1 = false;
+            for (int j = 0; j < nums.size(); ++j) {
+                if (j == i) {
+                    continue;
+                }
+                if (nums[j] - nums[i] == 1 && has1 == false) {
+                    has1 = true;
+                }
+                if (nums[j] - nums[i] >= 0 && nums[j] - nums[i] <= 1) {
+                    ++tmp;
+                }
+            }
+            if (has1 == true) {
+                res = max(res, tmp);
+            }
+        }
+        return res;
+        */
+        
+        // 2. hash -- O(n) time + O(n) space
+        unordered_map<int, int> hashmap;
+        for (int i = 0; i < nums.size(); ++i) {
+            if (hashmap.find(nums[i]) == hashmap.end()) {
+                hashmap[nums[i]] = 1;
+            } else {
+                ++hashmap[nums[i]];
+            }
+        }
+        int res = 0;
+        for (pair<int, int> item : hashmap) {
+            if (hashmap.find(item.first + 1) != hashmap.end()) {
+                int tmp = item.second + hashmap[item.first + 1];
+                res = max(res, tmp);
+            }
+        }
+        return res;
+    }
+};
