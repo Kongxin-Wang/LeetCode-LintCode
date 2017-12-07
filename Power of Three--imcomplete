@@ -1,0 +1,50 @@
+/*
+LeetCode 326:
+Given an integer, write a function to determine if it is a power of three.
+
+Follow up:
+Could you do it without using any loop / recursion?
+
+
+Solution:
+Language: C++
+Tag: 
+*/
+
+class Solution {
+public:
+    bool isPowerOfThree(int n) {
+        if (n <= 0) {
+            return false;
+        }
+        /*
+        // 1. loop
+        while (n != 1) {
+            if (n % 3 != 0) {
+                return false;
+            }
+            n /= 3;
+        }
+        return true;
+        */
+        
+        /*
+        // 2. recursion
+        if (n == 1) {
+            return true;
+        }
+        if (n % 3 != 0) {
+            return false;
+        }
+        return isPowerOfThree(n / 3);
+        */
+        
+        // 3. without loop or recursion -- base conversion??
+        
+        
+        // 4. log formula
+        
+        
+        // 5. limitation
+    }
+};
