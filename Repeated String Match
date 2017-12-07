@@ -1,0 +1,71 @@
+/*
+LeetCode 686:
+Given two strings A and B, find the minimum number of times A has to be repeated such that B is a substring of it. If no such solution, return -1.
+
+For example, with A = "abcd" and B = "cdabcdab".
+
+Return 3, because by repeating A three times (“abcdabcdabcd”), B is a substring of it; and B is not a substring of A repeated two times ("abcdabcd").
+
+Note:
+The length of A and B will be between 1 and 10000.
+
+Solution:
+Language: C++
+Tag: 
+*/
+
+class Solution {
+public:
+    int repeatedStringMatch(string A, string B) {
+        // 1. Rabin Karp
+        int step = 1;
+        string src = A;
+        while (src.length() < B.length()) {
+            src += A;
+            ++step;
+        }
+        if (strStr2(src, B) == true) {
+            return step;
+        }
+        src += A;  // "abcd" "cdabcdab"
+        ++step;
+        if (strStr2(src, B) == true) {
+            return step;
+        }
+        return -1;
+    }
+    
+    bool strStr2(string source, string target) {
+        int n = source.length(), m = target.length();
+        int Modulo = (int)pow(10.0, 6.0), Base = 31;
+        int power = 1, target_code = 0, source_code = 0;
+        int j = 0;
+        for (int i = 0; i < m; ++i) {
+            target_code = (target_code * Base + (int)target[i]) % Modulo;
+            power = (power * Base) % Modulo; 
+        }
+        for (int i = 0; i < n; ++i) {
+            source_code = (source_code * Base + (int)source[i]) % Modulo;
+            if (i < m - 1) {
+                continue;
+            }
+            if (i >= m) {
+                source_code = source_code - ((int)source[i - m] * power) % Modulo;
+                if (source_code < 0) {
+                    source_code += Modulo;
+                } 
+            }
+            if (source_code == target_code) {
+                for (j = 0; j < m; ++j) {
+                    if (source[i - m + j + 1] != target[j]) {
+                        break;
+                    }
+                }
+                if (j == m) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+};
