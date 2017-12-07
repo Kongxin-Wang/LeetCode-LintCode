@@ -1,0 +1,26 @@
+/*
+LeetCode 9:
+Determine whether an integer is a palindrome. Do this without extra space.
+
+
+Solution:
+Language: C++
+Tag: reverse
+hint: exclude negatives
+*/
+
+class Solution {
+public:
+    bool isPalindrome(int x) {
+        if (x < 0) {
+            return false;
+        }
+        // 1. O(1) space + O(log10(n)) time
+        int m = 0, tmp = x;
+        while (tmp != 0) {
+            m = m * 10 + tmp % 10;
+            tmp /= 10;
+        }
+        return (m == x);
+    }
+};
