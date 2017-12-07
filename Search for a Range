@@ -1,0 +1,130 @@
+/*
+LeetCode 34:
+Given an array of integers sorted in ascending order, find the starting and ending position of a given target value.
+
+Your algorithm's runtime complexity must be in the order of O(log n).
+
+If the target is not found in the array, return [-1, -1].
+
+For example,
+Given [5, 7, 7, 8, 8, 10] and target value 8,
+return [3, 4].
+
+Solution:
+Language: C++
+Tag: binary search
+*/
+
+class Solution {
+public:
+    vector<int> searchRange(vector<int>& nums, int target) {
+        /*
+        // 1. O(n) time + O(1) space
+        vector<int> res(2, -1);
+        int idx = 0, size = nums.size();
+        while (idx < size && nums[idx] != target) {
+            ++idx;
+        }
+        if (idx == size) {
+            return res;
+        }
+        res[0] = idx;
+        while (idx < size && nums[idx] == target) {
+            ++idx;
+        }
+        res[1] = idx - 1;
+        return res;
+        */
+        
+        /*
+        // 2. binary search -- O(logn) time + O(1) space
+        vector<int> res(2, -1);
+        if (nums.empty()) {
+            return res;
+        }
+        int start = first_pos(nums, target);
+        if (start == -1) {
+            return res;
+        }
+        res[0] = start;
+        int end = last_pos(nums, target);
+        res[1] = end;
+        return res;
+        */
+        
+        // 3. binary search -- O(logn) time + O(1) space
+        vector<int> res(2, -1);
+        if (nums.empty()) {
+            return res;
+        }
+        int start = first_greater_equal(nums, target);
+        if (start == -1 || nums[start] > target) {
+            return res;
+        }
+        res[0] = start;
+        int end = first_greater_equal(nums, target + 1);
+        if (end == -1) {
+            res[1] = nums.size() - 1;
+        } else {
+            res[1] = end - 1;
+        }
+        return res;
+    }
+    
+    int first_greater_equal(vector<int> &nums, int target) {
+        int start = 0, end = nums.size() - 1;
+        while (start + 1 < end) {
+            int mid = start + (end - start) / 2;
+            if (nums[mid] < target) {
+                start = mid;
+            } else {
+                end = mid;
+            }
+        }
+        if (nums[start] >= target) {
+            return start;
+        }
+        if (nums[end] >= target) {
+            return end;
+        }
+        return -1;
+    }
+    
+    int last_pos(vector<int> &nums, int target) {
+        int start = 0, end = nums.size() - 1;
+        while (start + 1 < end) {
+            int mid = start + (end - start) / 2;
+            if (nums[mid] <= target) {
+                start = mid;
+            } else {
+                end = mid;
+            }
+        }
+        if (nums[end] == target) {
+            return end;
+        }
+        if (nums[start] == target) {
+            return start;
+        }
+        return -1;
+    }
+    
+    int first_pos(vector<int> &nums, int target) {
+        int start = 0, end = nums.size() - 1;
+        while (start + 1 < end) {
+            int mid = start + (end - start) / 2;
+            if (nums[mid] < target) {
+                start = mid;
+            } else {
+                end = mid;
+            }
+        }
+        if (nums[start] == target) {
+            return start;
+        }
+        if (nums[end] == target) {
+            return end;
+        }
+        return -1;
+    }
+};
