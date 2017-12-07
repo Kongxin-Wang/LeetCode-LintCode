@@ -1,0 +1,53 @@
+/*
+LeetCode 500: https://leetcode.com/problems/keyboard-row/description/
+Given a List of words, return the words that can be typed using letters of alphabet on only one row's of American keyboard like the image below.
+
+Example 1:
+Input: ["Hello", "Alaska", "Dad", "Peace"]
+Output: ["Alaska", "Dad"]
+Note:
+You may use one character in the keyboard more than once.
+You may assume the input string will only contain letters of alphabet.
+
+
+Solution:
+Language: C++
+Tag: 
+*/
+
+class Solution {
+public:
+    vector<string> findWords(vector<string>& words) {
+        // 1. O(1) space + O(wordsSize * letterSize) time
+        string dict[3] = {"QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"};
+        unordered_map<char, int> hash;
+        for (int i = 0 ; i < 3; ++i) {
+            for (int j = 0; j < dict[i].length(); ++j) {
+                hash[dict[i][j]] = i;
+            }
+        }
+        vector<string> res;
+        for (string word : words) {
+            if (word == "") {
+                continue;
+            }
+            int idx = hash[to_Cap(word[0])], i = 0;
+            for (i = 1; i < word.length(); ++i) {
+                if (idx != hash[to_Cap(word[i])]) {
+                    break;
+                }
+            }
+            if (i == word.length()) {
+                res.push_back(word);
+            }
+        }
+        return res;
+    }
+    
+    char to_Cap(char c) {
+        if (c >= 'a' && c <= 'z') {
+            c = c + 'A' - 'a';
+        }
+        return c;
+    }
+};
