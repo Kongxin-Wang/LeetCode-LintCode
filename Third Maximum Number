@@ -1,0 +1,86 @@
+/*
+LeetCode 414:
+Given a non-empty array of integers, return the third maximum number in this array. If it does not exist, return the maximum number. The time complexity must be in O(n).
+
+Example 1:
+Input: [3, 2, 1]
+
+Output: 1
+
+Explanation: The third maximum is 1.
+Example 2:
+Input: [1, 2]
+
+Output: 2
+
+Explanation: The third maximum does not exist, so the maximum (2) is returned instead.
+Example 3:
+Input: [2, 2, 3, 1]
+
+Output: 1
+
+Explanation: Note that the third maximum here means the third maximum distinct number.
+Both numbers with value 2 are both considered as second maximum.
+
+Solution:
+Language: C++
+Tag: sort 
+*/
+
+class Solution {
+public:
+    int thirdMax(vector<int>& nums) {
+        /*
+        // 1. sort -- O(nlogn) time + O(1) space
+        sort(nums.begin(), nums.end(), greater<int>());
+        int count = 1, i = 1;
+        for (i = 1; i < nums.size(); ++i) {
+            if (nums[i] != nums[i - 1]) {
+                if (++count == 3) {
+                    break;
+                }
+            }
+        }
+        if (count < 3) {
+            return nums[0];
+        }
+        return nums[i];
+        */
+        
+        /*
+        // 2. O(n) time + O(1) space
+        int max1 = 0, max2 = 0, max3 = 0;
+        bool hasMax1 = false, hasMax2 = false, hasMax3 = false;
+        for (int i = 0; i < nums.size(); ++i) {
+            int tmp = nums[i];
+            if (hasMax1 == false || tmp > max1) {
+                if (!hasMax1) {
+                    hasMax1 = true;
+                    max1 = tmp;
+                } else {
+                    swap(tmp, max1);
+                }
+            }
+            if ((hasMax2 == false || tmp > max2) && tmp < max1) {
+                if (!hasMax2) {
+                    hasMax2 = true;
+                    max2 = tmp;
+                } else {
+                    swap(tmp, max2);
+                }
+            }
+            if ((hasMax3 == false || tmp > max3) && tmp < max2 && hasMax2 == true) {
+                hasMax3 = true;
+                swap(tmp, max3);
+            }
+        }
+        if (hasMax3 == true) {
+            return max3;
+        }
+        return max1;
+        */
+        
+        // 3. modify of 2 -- O(n) time + O(1) space
+        
+    }
+};
