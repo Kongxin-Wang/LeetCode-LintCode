@@ -1,0 +1,34 @@
+/*
+LeetCode 20:
+Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+
+The brackets must close in the correct order, "()" and "()[]{}" are all valid but "(]" and "([)]" are not.
+
+
+Solution:
+Language: C++
+Tag: stack
+*/
+
+class Solution {
+public:
+    bool isValid(string s) {
+        // 1. stack -- O(len) time + O(len) space
+        map<char, char> hash;
+        hash[')'] = '(';
+        hash['}'] = '{';
+        hash[']'] = '[';
+        stack<char> myStack;
+        for (int i = 0; i < s.length(); ++i) {
+            if (s[i] == '(' || s[i] == '[' || s[i] == '{') {
+                myStack.push(s[i]);
+            } else if (s[i] == ')' || s[i] == ']' || s[i] == '}') {
+                if (myStack.empty() || myStack.top() != hash[s[i]]) {
+                    return false;
+                }
+                myStack.pop();
+            }
+        }
+        return myStack.empty();
+    }
+};
