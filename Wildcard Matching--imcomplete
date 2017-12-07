@@ -1,0 +1,56 @@
+/*
+LeetCode 44:
+Implement wildcard pattern matching with support for '?' and '*'.
+
+'?' Matches any single character.
+'*' Matches any sequence of characters (including the empty sequence).
+
+The matching should cover the entire input string (not partial).
+
+The function prototype should be:
+bool isMatch(const char *s, const char *p)
+
+Some examples:
+isMatch("aa","a") → false
+isMatch("aa","aa") → true
+isMatch("aaa","aa") → false
+isMatch("aa", "*") → true
+isMatch("aa", "a*") → true
+isMatch("ab", "?*") → true
+isMatch("aab", "c*a*b") → false
+
+
+Solution:
+Language: C++
+Tag: 2Pointer  DP<undo>
+*/
+
+class Solution {
+public:
+    bool isMatch(string s, string p) {
+        // 1. two pointer -- O(1) space + O() time
+        int len_s = s.length(), len_p = p.length();
+        int idx_s = 0, idx_p = 0;
+        bool hasStar = false;
+        int s_back = -1, p_back = -1;
+        while (idx_s < len_s) {
+            if (idx_p < len_p && (s[idx_s] == p[idx_p] || p[idx_p] == '?')) {
+                ++idx_s;
+                ++idx_p;
+            } else if (idx_p < len_p && p[idx_p] == '*') {
+                hasStar = true;
+                s_back = idx_s;
+                p_back = ++idx_p;
+            } else if (hasStar == true) {
+                idx_s = ++s_back;
+                idx_p = p_back;
+            } else {
+                return false;
+            }
+        }
+        while (idx_p < len_p && p[idx_p] == '*') {
+            ++idx_p;
+        }
+        return (idx_p == len_p);
+    }
+};
