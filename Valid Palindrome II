@@ -1,0 +1,67 @@
+/*
+LeetCode 680:
+Given a non-empty string s, you may delete at most one character. Judge whether you can make it a palindrome.
+
+Example 1:
+Input: "aba"
+Output: True
+Example 2:
+Input: "abca"
+Output: True
+Explanation: You could delete the character 'c'.
+Note:
+The string will only contain lowercase characters a-z. The maximum length of the string is 50000.
+
+Solution:
+Language: C++
+Tag: Divide & Conquer
+*/
+
+class Solution {
+public:
+    bool validPalindrome(string s) {
+        if (s.empty()) {
+            return true;
+        }
+        /*
+        // 1. brute force -- O(len^2) time + O(1) space -- time limit exceed
+        int left = 0, right = s.length() - 1;
+        if (isPalindrome(s, left, right) == true) {
+            return true;
+        }
+        for (int i = 0; i < s.length(); ++i) {
+            string tmp = "";
+            tmp += s[i];
+            s.erase(i, 1);
+            left = 0, right = s.length() - 1;
+            if (isPalindrome(s, left, right) == true) {
+                return true;
+            }
+            s.insert(i, tmp);
+        }
+        return false;
+        */
+        
+        // 2. O(len) time + O(1) space
+        int left = 0, right = s.length() - 1;
+        if (isPalindrome(s, left, right) == true) {
+            return true;
+        }
+        int newLeft = left + 1, newRight = right - 1;
+        if (isPalindrome(s, newLeft, right) || isPalindrome(s, left, newRight)) {
+            return true;
+        }
+        return false;
+    }
+    
+    bool isPalindrome(string &s, int &left, int &right) {
+        while (left < right) {
+            if (s[left] != s[right]) {
+                return false;
+            }
+            ++left;
+            --right;
+        }
+        return true;
+    }
+};
