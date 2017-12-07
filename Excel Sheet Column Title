@@ -1,0 +1,56 @@
+/*
+LeetCode 168:
+Given a positive integer, return its corresponding column title as appear in an Excel sheet.
+
+For example:
+
+    1 -> A
+    2 -> B
+    3 -> C
+    ...
+    26 -> Z
+    27 -> AA
+    28 -> AB 
+
+Solution:
+Language: C++
+Tag: 
+*/
+
+class Solution {
+public:
+    string convertToTitle(int n) {
+        /*
+        // 1. res = res * 26 + (s[i] - 'A' + 1);
+        string res = "";
+        while (n != 0) {
+            int remainder = n % 26;
+            if (remainder == 0) {
+                remainder += 26;
+            }
+            char last = 'A' - 1 + remainder;
+            res += last;
+            n = (n - remainder) / 26;
+        }
+        int left = 0, right = res.length() - 1;
+        while (left < right) {
+            swap(res[left++], res[right--]);
+        }
+        return res;
+        */
+        
+        // 2.
+        string res = "";
+        while (n != 0) {
+            --n;
+            char c = 'A' + n % 26;
+            res += c;
+            n /= 26;
+        }
+        int left = 0, right = res.length() - 1;
+        while (left < right) {
+            swap(res[left++], res[right--]);
+        }
+        return res;
+    }
+};
