@@ -1,0 +1,82 @@
+/*
+LeetCode 189:
+Rotate an array of n elements to the right by k steps.
+
+For example, with n = 7 and k = 3, the array [1,2,3,4,5,6,7] is rotated to [5,6,7,1,2,3,4].
+
+Note:
+Try to come up as many solutions as you can, there are at least 3 different ways to solve this problem.
+
+[show hint]
+
+Related problem: Reverse Words in a String II
+
+Solution:
+Language: C
+Tag: reverse
+*/
+
+void rotate(int* nums, int numsSize, int k) {
+    /*
+    // 1. three reverse -- O(2n) time + O(1) space
+    k %= numsSize;
+    if (k < 0) {
+        k += numsSize;
+    }
+    reverse(nums, 0, numsSize - k - 1);
+    reverse(nums, numsSize - k, numsSize - 1);
+    reverse(nums, 0, numsSize - 1);
+    */
+    
+    /*
+    // 2. O(n) space + O(2n) time
+    k = (k % numsSize + numsSize) % numsSize;
+    int *temp = (int*)malloc(sizeof(int) * numsSize);
+    int idx = 0;
+    for (int i = numsSize - k; i < numsSize; ++i) {
+        temp[idx++] = nums[i];
+    }
+    for (int i = 0; i < numsSize - k; ++i) {
+        temp[idx++] = nums[i];
+    }
+    for (int i = 0; i < numsSize; ++i) {
+        nums[i] = temp[i];
+    }
+    free(temp);
+    */
+    
+    /*
+    // 3. O(nk) time + O(1) space
+    k = (k % numsSize + numsSize) % numsSize;
+    for (int i = 0; i < k; ++i) {
+        int first = nums[numsSize - 1];
+        for (int i = numsSize - 1; i > 0; --i) {
+            nums[i] = nums[i - 1];
+        }
+        nums[0] = first;
+    }
+    */
+    
+    // 4. Cyclic Replacements ??? -- O(n) time + O(1) space
+    k = (k % numsSize + numsSize) % numsSize;
+    int count = 0;
+    for (int start = 0; count < numsSize; ++start) {
+        int cur_idx = start, cur_val = nums[start];
+        do {
+            int next_idx = (cur_idx + k) % numsSize;
+            int next_val = nums[next_idx];
+            nums[next_idx] = cur_val;
+            cur_val = next_val;
+            cur_idx = next_idx;
+            ++count;
+        } while (cur_idx != start);
+    }
+}
+
+void reverse(int *nums, int left, int right) {
+    while (left < right) {
+        int tmp = nums[left];
+        nums[left++] = nums[right];
+        nums[right--] = tmp;
+    }
+}
