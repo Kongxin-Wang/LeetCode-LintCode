@@ -1,0 +1,54 @@
+/*
+LeetCode 22:
+Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
+
+For example, given n = 3, a solution set is:
+
+[
+  "((()))",
+  "(()())",
+  "(())()",
+  "()(())",
+  "()()()"
+]
+
+Solution:
+Language: C++
+Tag: DFS
+
+*/
+
+class Solution {
+public:
+    vector<string> generateParenthesis(int n) {
+        if (n == 0) {
+            return vector<string>();
+        }
+        /*
+        // 1. DFS
+        vector<string> res;
+        string str = "";
+        helper(str, res, 0, 0, n);
+        return res;
+        */
+        
+    }
+    
+    void helper(string &str, vector<string> &res, int left, int right, int n) {
+        if (left == n && right == n) {
+            res.push_back(str);
+            return;
+        }
+        if (left != n) {
+            str += '(';
+            helper(str, res, left + 1, right, n);
+            str.pop_back();
+        }
+        if (right < left) {
+            str += ')';
+            helper(str, res, left, right + 1, n);
+            str.pop_back();
+        }
+    }
+    
+};
