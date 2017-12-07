@@ -1,0 +1,193 @@
+/*
+LeetCode: 41
+Given an unsorted integer array, find the first missing positive integer.
+
+For example,
+Given [1,2,0] return 3,
+and [3,4,-1,1] return 2.
+
+Your algorithm should run in O(n) time and uses constant space.
+
+Solution:
+Language: C++
+Tag: sort heap partition
+*/
+
+class cmp {
+public:
+    bool operator() (int a, int b) {
+        return a > b;
+    }
+};
+
+class Solution {
+public:
+    int firstMissingPositive(vector<int>& nums) {
+        /*
+        // 1. sort -- O(nlogn) time + O(1) space
+        sort(nums.begin(), nums.end(), less<int>());
+            //quicksort(nums, 0, nums.size() - 1);
+            //heapsort(nums);
+            //int *temp = new int[nums.size()];
+            //mergesort(nums, 0, nums.size() - 1, temp);
+        int res = 1;
+        for (int i = 0; i < nums.size(); ++i) {
+            if (nums[i] == res) {
+                ++res;
+            }
+        }
+        return res;
+        */
+        
+        /*
+        // 2. minHeap -- O(nlogn) time + O(n) space
+        priority_queue<int, vector<int>, cmp> minHeap;
+        for (int i = 0; i < nums.size(); ++i) {
+            if (nums[i] <= 0) {
+                continue;
+            }
+            minHeap.push(nums[i]);
+        }
+        int res = 1;
+        while (!minHeap.empty()) {
+            if (minHeap.top() > res) {
+                break;
+            }
+            if (minHeap.top() == res) {
+                ++res;
+            }
+            minHeap.pop();
+        }
+        return res;
+        */
+        
+        /*
+        // 3. O(n) time ?? + O(1) space
+        int i = 0, size = nums.size();
+        while (i < size) {
+            if (nums[i] > 0 && nums[i] <= size && nums[i] != nums[nums[i] - 1]) {
+                swap(nums[i], nums[nums[i] - 1]); 
+            } else {
+                ++i;
+            }
+        }
+        for (int i = 0; i < size; ++i) {
+            if (nums[i] != i + 1) {
+                return i + 1;
+            }
+        }
+        return size + 1;
+        */
+        
+        // 4. O(n) time + O(1) space
+            // partition
+        int left = 0, right = nums.size() - 1, pivot = 0;
+        while (left <= right) {
+            while (left <= right && nums[left] > pivot) {
+                ++left;
+            }
+            while (left <= right && nums[right] <= pivot) {
+                --right;
+            }
+            if (left <= right) {
+                swap(nums[left], nums[right]);
+            }
+        }
+        for (int i = 0; i < left; ++i) {
+            int idx = abs(nums[i]) - 1;
+            if (idx < nums.size() && nums[idx] > 0) {
+                nums[idx] *= -1;
+            }
+        }
+        for (int i = 0; i < nums.size(); ++i) {
+            if (nums[i] > 0) {
+                return i + 1;
+            }
+        }
+        return left + 1; // be careful: should be left + 1 instead of left or nums.size() + 1
+    }
+    
+    void quicksort(vector<int> &nums, int start, int end) {
+        if (start >= end) {
+            return;
+        }
+        int left = start, right = end, pivot = nums[(start + end) / 2];
+        while (left <= right) {
+            while (left <= right && nums[left] < pivot) {
+                ++left;
+            }
+            while (left <= right && nums[right] > pivot) {
+                --right;
+            }
+            if (left <= right) {
+                swap(nums[left++], nums[right--]);
+            }
+        }
+        quicksort(nums, start, right);
+        quicksort(nums, left, end);
+    }
+    
+    void mergesort(vector<int> &nums, int start, int end, int *temp) {
+        if (start >= end) {
+            return;
+        }
+        int mid = start + (end - start) / 2;
+        mergesort(nums, start, mid, temp);
+        mergesort(nums, mid + 1, end, temp);
+        merge(nums, start, end, temp);
+    }
+    
+    void merge(vector<int> &nums, int start, int end, int *temp) {
+        int mid = start + (end - start) / 2;
+        int left = start, right = mid + 1, idx = start;
+        while (left <= mid && right <= end) {
+            if (nums[left] <= nums[right]) {
+                temp[idx++] = nums[left++];
+            } else {
+                temp[idx++] = nums[right++];
+            }
+        }
+        while (left <= mid) {
+            temp[idx++] = nums[left++];
+        }
+        while (right <= end) {
+            temp[idx++] = nums[right++];
+        }
+        for (int i = start; i <= end; ++i) {
+            nums[i] = temp[i];
+        }
+    }
+    
+    void heapsort(vector<int> &nums) {
+        int size = nums.size();
+        for (int i = (size - 1) / 2; i >= 0; --i) {
+            siftdown(nums, i, size);
+        }
+        while (size > 0) {
+            swap(nums[0], nums[--size]);
+            siftdown(nums, 0, size);
+        }
+        int left = 0, right = nums.size() - 1;
+        while (left < right) {
+            swap(nums[left++], nums[right--]);
+        }
+    }
+    
+    void siftdown(vector<int> &nums, int father, int size) {
+        while (father < size) {
+            int min_idx = father;
+            int left = father * 2 + 1, right = father * 2 + 2;
+            if (left < size && nums[left] < nums[min_idx]) {
+                min_idx = left;
+            }
+            if (right < size && nums[right] < nums[min_idx]) {
+                min_idx = right;
+            }
+            if (min_idx == father) {
+                break;
+            }
+            swap(nums[min_idx], nums[father]);
+            father = min_idx;
+        }
+    }
+};
