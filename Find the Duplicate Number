@@ -1,0 +1,92 @@
+/*
+LeetCode 287:
+Given an array nums containing n + 1 integers where each integer is between 1 and n (inclusive), prove that at least one duplicate number must exist. Assume that there is only one duplicate number, find the duplicate one.
+
+Note:
+You must not modify the array (assume the array is read only).
+You must use only constant, O(1) extra space.
+Your runtime complexity should be less than O(n2).
+There is only one duplicate number in the array, but it could be repeated more than once.
+
+Solution:
+Language: C
+Tag: fast & slow pointer
+
+*/
+
+
+int findDuplicate(int* nums, int numsSize) {
+    /*
+    // 1. brute force -- O(n^2) time + O(1) space -- no modify of array
+    for (int i = 0; i < numsSize; ++i) {
+        for (int j = i + 1; j < numsSize; ++j) {
+            if (nums[i] == nums[j]) {
+                return nums[i];
+            }
+        }
+    }
+    return -1; // no duplicate
+    */
+    
+    /*
+    // 2. O(n) time + O(1) space -- modify array
+    for (int i = 0; i < numsSize; ++i) {
+        int idx = abs(nums[i]) - 1;
+        if (nums[idx] < 0) {
+            return idx + 1;
+        } else {
+            nums[idx] *= -1;
+        }
+    }
+    return -1; // no duplicate
+    */
+    
+    /*
+    // 3. O(n) time + O(1) space -- modify the array
+    for (int i = 0; i < numsSize; ++i) {
+        nums[(nums[i] - 1) % numsSize] += numsSize;
+    }
+    for (int i = 0; i < numsSize; ++i) {
+        if (nums[i] > numsSize * 2) {
+            return i + 1;
+        }
+    }
+    return -1; // no duplicate
+    */
+    
+    /*
+    // 4. O() time + O(1) space -- modify the array
+    int i = 0;
+    while (i < numsSize) {
+        if (nums[i] != nums[nums[i] - 1]) {
+            int tmp = nums[i];
+            nums[i] = nums[tmp - 1];
+            nums[tmp - 1] = tmp;
+        } else {
+            ++i;
+        }
+    }
+    for (int i = 0; i < numsSize; ++i) {
+        if (nums[i] != i + 1) {
+            return nums[i];
+        }
+    }
+    return -1; // no duplicate
+    */
+    
+    // 5. two pointers: O() time + O(1) space -- no modify the array ????
+    if (numsSize <= 1) {
+        return -1;
+    }
+    int fast = 0, slow = 0;
+    do {
+        fast = nums[nums[fast]];
+        slow = nums[slow];
+    } while (fast != slow);
+    fast = 0;
+    while (fast != slow) {
+        fast = nums[fast];
+        slow = nums[slow];
+    }
+    return fast;
+}
