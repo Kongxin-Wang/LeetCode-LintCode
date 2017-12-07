@@ -1,0 +1,40 @@
+/*
+LeetCode 219:
+Given an array of integers and an integer k, find out whether there are two distinct indices i and j in the array such that nums[i] = nums[j] and the absolute difference between i and j is at most k.
+
+Solution:
+Language: C++
+Tag: hashmap
+*/
+
+class Solution {
+public:
+    #define min(a, b) (a < b ? a : b)
+    bool containsNearbyDuplicate(vector<int>& nums, int k) {
+        /*
+        // 1. bruteforce -- O(nk) time + O(1) space -- time limit exceed
+        for (int i = 0; i < nums.size(); ++i) {
+            for (int j = i + 1; j <= min(nums.size() - 1, i + k); ++j) {
+                if (nums[i] == nums[j]) {
+                    return true;
+                }
+            }
+        }
+        return false;
+        */
+        
+        /*
+        // 2. hashmap -- O(n) time + O(n) space
+        unordered_map<int, int> hashmap;
+        for (int i = 0; i < nums.size(); ++i) {
+            if (hashmap.find(nums[i]) != hashmap.end() && i - hashmap[nums[i]] <= k) {
+                return true;
+            } 
+            hashmap[nums[i]] = i;
+        }
+        return false;
+        */
+        
+        // 3. binary search tree -- treeset<java> ????
+    }
+};
