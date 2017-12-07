@@ -1,0 +1,144 @@
+/*
+LeetCode 695:
+Given a non-empty 2D array grid of 0's and 1's, an island is a group of 1's (representing land) connected 4-directionally (horizontal or vertical.) You may assume all four edges of the grid are surrounded by water.
+
+Find the maximum area of an island in the given 2D array. (If there is no island, the maximum area is 0.)
+
+Example 1:
+[[0,0,1,0,0,0,0,1,0,0,0,0,0],
+ [0,0,0,0,0,0,0,1,1,1,0,0,0],
+ [0,1,1,0,1,0,0,0,0,0,0,0,0],
+ [0,1,0,0,1,1,0,0,1,0,1,0,0],
+ [0,1,0,0,1,1,0,0,1,1,1,0,0],
+ [0,0,0,0,0,0,0,0,0,0,1,0,0],
+ [0,0,0,0,0,0,0,1,1,1,0,0,0],
+ [0,0,0,0,0,0,0,1,1,0,0,0,0]]
+Given the above grid, return 6. Note the answer is not 11, because the island must be connected 4-directionally.
+Example 2:
+[[0,0,0,0,0,0,0,0]]
+Given the above grid, return 0.
+Note: The length of each dimension in the given grid does not exceed 50.
+
+Solution:
+Language: C++
+Tag: BFS  Union_Find
+*/
+
+class Union_Find {
+private:
+    int *father;
+    int *size;
+    int count;
+public:
+    Union_Find(int n) {
+        father = new int[n];
+        size = new int[n];
+        for (int i = 0; i < n; ++i) {
+            father[i] = i;
+            size[i] = 1;
+        }
+        count = n;
+    }
+    
+    int compressed_Find(int x) {
+        if (x == father[x]) {
+            return x;
+        }
+        return father[x] = compressed_Find(father[x]);
+    }
+    
+    void connect(int x, int y) {
+        int root_x = compressed_Find(x);
+        int root_y = compressed_Find(y);
+        if (root_x != root_y) {
+            father[root_x] = root_y;
+            size[root_y] += size[root_x];
+        }
+    }
+    
+    int getMaxSize() {
+        int max_val = 0;
+        for (int i = 0; i < count; ++i) {
+            max_val = (max_val > size[i] ? max_val : size[i]);
+        }
+        return max_val;
+    }
+};
+
+class Solution {
+public:
+    #define max(a, b) (a > b ? a : b)
+    int maxAreaOfIsland(vector<vector<int>>& grid) {
+        if (grid.empty() || grid[0].empty()) {
+            return 0;
+        }
+        /*
+        // 1. BFS + visited -- O(mn) time + O(mn) space
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+        int max_area = 0;
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 1 && visited[i][j] == false) {
+                    visited[i][j] = true;
+                    int area = BFS_helper(grid, i, j, visited);
+                    max_area = max(area, max_area);
+                } 
+            }
+        }
+        return max_area;
+        */
+        
+        // 2. Union_Find -- O(mn) time + O(mn) space
+        int m = grid.size(), n = grid[0].size();
+        Union_Find *UF = new Union_Find(m * n);
+        int num_1s = 0;
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 1) {
+                    ++num_1s;
+                    if (j + 1 < n && grid[i][j + 1] == 1) {
+                        UF->connect(i * n + j, i * n + j + 1);
+                    }
+                    if (i + 1 < m && grid[i + 1][j] == 1) {
+                        UF->connect(i * n + j, (i + 1) * n + j);
+                    }
+                }
+            }
+        }
+        if (num_1s == 0) {
+            return 0;
+        }
+        return UF->getMaxSize();
+    }
+    
+    int trans[4][2] = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}}; // L R U D
+    bool inbound(int row, int col, int rowSize, int colSize) {
+        if (row >= 0 && row < rowSize && col >= 0 && col < colSize) {
+            return true;
+        }
+        return false;
+    }
+    
+    int BFS_helper(vector<vector<int>> &grid, int i, int j, vector<vector<bool>> &visited) {
+        queue<pair<int, int>> que;
+        que.push({i, j});
+        int area = 0;
+        while (!que.empty()) {
+            pair<int, int> pos = que.front();
+            que.pop();
+            ++area;
+            for (int k = 0; k < 4; ++k) {
+                int nextRow = pos.first + trans[k][0];
+                int nextCol = pos.second + trans[k][1];
+                if (!inbound(nextRow, nextCol, grid.size(), grid[0].size())
+                    || grid[nextRow][nextCol] != 1 || visited[nextRow][nextCol] == true) {
+                    continue;
+                }
+                visited[nextRow][nextCol] = true;
+                que.push({nextRow, nextCol});
+            }
+        }
+        return area;
+    }
+};
