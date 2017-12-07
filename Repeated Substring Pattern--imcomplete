@@ -1,0 +1,52 @@
+/*
+LeetCode 459:
+Given a non-empty string check if it can be constructed by taking a substring of it and appending multiple copies of the substring together. You may assume the given string consists of lowercase English letters only and its length will not exceed 10000.
+
+Example 1:
+Input: "abab"
+
+Output: True
+
+Explanation: It's the substring "ab" twice.
+Example 2:
+Input: "aba"
+
+Output: False
+Example 3:
+Input: "abcabcabcabc"
+
+Output: True
+
+Explanation: It's the substring "abc" four times. (And the substring "abcabc" twice.)
+
+Solution:
+Language: C++
+Tag: 
+*/
+
+class Solution {
+public:
+    bool repeatedSubstringPattern(string s) {
+        // 1. brute force
+        int len = s.length();
+        int subLen = 1;
+        while (subLen <= len / 2) {
+            if (len % subLen == 0) {
+                string substr = s.substr(0, subLen);
+                int idx = subLen;
+                while (idx < len) {
+                    string tmp = s.substr(idx, subLen);
+                    if (tmp != substr) {
+                        break;
+                    }
+                    idx += subLen;
+                }
+                if (idx >= len) {
+                    return true;
+                }
+            }
+            ++subLen;
+        }
+        return false;
+    }
+};
