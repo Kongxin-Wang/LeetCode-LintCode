@@ -1,0 +1,90 @@
+/*
+LeetCode 54:
+Given a matrix of m x n elements (m rows, n columns), return all elements of the matrix in spiral order.
+
+For example,
+Given the following matrix:
+
+[
+ [ 1, 2, 3 ],
+ [ 4, 5, 6 ],
+ [ 7, 8, 9 ]
+]
+You should return [1,2,3,6,9,8,7,4,5].
+
+
+Solution:
+Language: C++
+Tag: 
+*/
+
+class Solution {
+public:
+    vector<int> spiralOrder(vector<vector<int>>& matrix) {
+        if (matrix.empty() || matrix[0].empty()) {
+            return vector<int>();
+        }
+        /*
+        // 1. O(mn) time + O(mn) space
+        int rowSize = matrix.size(), colSize = matrix[0].size();
+        int trans[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}; // R D L U
+        unordered_set<int> hash;
+        int dire = 0;
+        vector<int> res({matrix[0][0]});
+        hash.insert(0);
+        pair<int, int> pos = {0, 0};
+        while (res.size() < rowSize * colSize) {
+            int row = pos.first + trans[dire][0], col = pos.second + trans[dire][1];
+            int loc = row * colSize + col;
+            if (!inbound(row, col, rowSize, colSize) || hash.find(loc) != hash.end()) {
+                dire = (dire + 1) % 4;
+                continue;
+            }
+            res.push_back(matrix[row][col]);
+            hash.insert(loc);
+            pos.first = row;
+            pos.second = col;
+        }
+        return res;
+        */
+        
+        // 2. O(mn) time + O(1) space
+        int rowSize = matrix.size(), colSize = matrix[0].size();
+        int trans[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}; // R D L U
+        int right = colSize, down = rowSize, left = 0, up = 0;
+        int dire = 0;
+        vector<int> res({matrix[0][0]});
+        pair<int, int> pos = {0, 0};
+        while (res.size() < rowSize * colSize) {
+            int row = pos.first + trans[dire][0], col = pos.second + trans[dire][1];
+            if (!inbound2(row, col, right, down, left, up)) {
+                switch(dire) {
+                    case 0: up = row + 1; break;
+                    case 1: right = col; break;
+                    case 2: down = row; break;
+                    case 3: left = col + 1; break;
+                }
+                dire = (dire + 1) % 4;
+                continue;
+            }
+            res.push_back(matrix[row][col]);
+            pos.first = row;
+            pos.second = col;
+        }
+        return res;
+    }
+    
+    bool inbound2(int row, int col, int right, int down, int left, int up) {
+        if (row >= up && row < down && col >= left && col < right) {
+            return true;
+        }
+        return false;
+    }
+    
+    bool inbound(int row, int col, int rowSize, int colSize) {
+        if (row >= 0 && row < rowSize && col >= 0 && col < colSize) {
+            return true;
+        }
+        return false;
+    }
+};
