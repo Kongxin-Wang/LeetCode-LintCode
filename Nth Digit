@@ -1,0 +1,80 @@
+/*
+LeetCode 400:
+Find the nth digit of the infinite integer sequence 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ...
+
+Note:
+n is positive and will fit within the range of a 32-bit signed integer (n < 231).
+
+Example 1:
+
+Input:
+3
+Output:
+3
+
+Example 2:
+Input:
+11
+Output:
+0
+Explanation:
+The 11th digit of the sequence 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ... is a 0, which is part of the number 10.
+
+
+Solution:
+Language: C++
+Tag: 
+*/
+
+class Solution {
+public:
+    int findNthDigit(int n) {
+        /*
+        // 1. brute force
+        int num = 1, digit = 1, unit = 1;
+        long limit = 10, count = 1;
+        while (n > count) {
+            if (++num == limit) {
+                limit *= 10;
+                ++unit;
+            }
+            if (count + unit < n) { // if n == INT_MAX --> may cause integer overflow
+                count += unit;
+            } else {
+                break;
+            }
+        }
+        while (n != count) {
+            limit /= 10;
+            digit = num / limit;
+            ++count;
+            num %= limit;
+        }
+        return digit;
+        */
+        
+    
+        // 2. 1-9: 1 * 9    10-99: 2 * 90    100-999: 3 * 900
+        if (n <= 9) {
+            return n;
+        }
+        int a = 1;
+        long base = 9;
+        while (n > base * a) {
+            n -= a * base;
+            ++a; 
+            base *= 10;
+        }
+        base = pow(10, a - 1);
+        int num = base + (n - 1) / a;
+        n = (n - 1) % a + 1;
+        int digit = 0;
+        while (n != 0) {
+            --n;
+            digit = num / base;
+            num %= base;
+            base /= 10;
+        }
+        return digit;
+    }
+};
