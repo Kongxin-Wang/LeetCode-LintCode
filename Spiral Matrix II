@@ -1,0 +1,60 @@
+/*
+LeetCode 59:
+Given an integer n, generate a square matrix filled with elements from 1 to n2 in spiral order.
+
+For example,
+Given n = 3,
+
+You should return the following matrix:
+[
+ [ 1, 2, 3 ],
+ [ 8, 9, 4 ],
+ [ 7, 6, 5 ]
+]
+
+Solution:
+Language: C++
+Tag:
+*/
+
+class Solution {
+public:
+    vector<vector<int>> generateMatrix(int n) {
+        if (n <= 0) {
+            return vector<vector<int>>();
+        }
+        // 1. O(mn) time + O(1) space
+        vector<vector<int>> res(n, vector<int>(n, 1));
+        int trans[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}; // R D L U
+        int left = 0, right = n, up = 0, down = n;
+        int val = 1, dir = 0;
+        pair<int, int> pos({0, 0});
+        while (val < n * n) {
+            int row = pos.first + trans[dir][0], col = pos.second + trans[dir][1];
+            if (!inbound(row, col, left, right, up, down)) {
+                if (dir == 0) {
+                    ++up;
+                } else if (dir == 1) {
+                    --right;
+                } else if (dir == 2) {
+                    --down;
+                } else {
+                    ++left;
+                }
+                dir = (dir + 1) % 4;
+                continue;
+            }
+            res[row][col] = ++val;
+            pos.first = row;
+            pos.second = col;
+        }
+        return res;
+    }
+    
+    bool inbound(int row, int col, int left, int right, int up, int down) {
+        if (row >= up && row < down && col >= left && col < right) {
+            return true;
+        }
+        return false;
+    }
+};
