@@ -1,0 +1,91 @@
+/*
+LeetCode 73:
+Given a m x n matrix, if an element is 0, set its entire row and column to 0. Do it in place.
+
+Follow up:
+Did you use extra space?
+A straight forward solution using O(mn) space is probably a bad idea.
+A simple improvement uses O(m + n) space, but still not the best solution.
+Could you devise a constant space solution?
+
+Solution:
+Language: C++
+Tag: 
+*/
+
+class Solution {
+public:
+    void setZeroes(vector<vector<int>>& matrix) {
+        /*
+        // 1. O(mn) time + O(m + n) space
+        unordered_set<int> hashRow;
+        unordered_set<int> hashCol;
+        int rowSize = matrix.size(), colSize = matrix[0].size();
+        for (int i = 0; i < rowSize; ++i) {
+            for (int j = 0; j < colSize; ++j) {
+                if (matrix[i][j] == 0) {
+                    hashRow.insert(i);
+                    hashCol.insert(j);
+                }
+            }
+        }
+        for (int row : hashRow) {
+            for (int j = 0; j < colSize; ++j) {
+                matrix[row][j] = 0;
+            }
+        }
+        for (int col : hashCol) {
+            for (int i = 0; i < rowSize; ++i) {
+                matrix[i][col] = 0;
+            }
+        }
+        */
+        
+        // 2. use lastRow of 0 to record: O(1) space + O(mn) time
+        int rowSize = matrix.size(), colSize = matrix[0].size();
+        int lastRow = -1;
+        for (int i = 0; i < rowSize; ++i) {
+            for (int j = 0; j < colSize; ++j) {
+                if (matrix[i][j] == 0) {
+                    lastRow = i;
+                    break;
+                }
+            }
+        }
+        if (lastRow == -1) {
+            return;
+        }
+        for (int j = 0; j < colSize; ++j) {
+            for (int i = 0; i < lastRow; ++i) {
+                if (matrix[i][j] == 0) {
+                    matrix[lastRow][j] = 0;
+                    break;
+                }
+            }
+        }
+        for (int i = 0; i < lastRow; ++i) {
+            bool has0 = false;
+            for (int j = 0; j < colSize; ++j) {
+                if (matrix[i][j] == 0) {
+                    has0 = true;
+                    break;
+                }
+            }
+            if (has0) {
+                for (int j = 0; j < colSize; ++j) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+        for (int j = 0; j < colSize; ++j) {
+            if (matrix[lastRow][j] == 0) {
+                for (int i = 0; i < rowSize; ++i) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+        for (int j = 0; j < colSize; ++j) {
+            matrix[lastRow][j] = 0;
+        }
+    }
+};
