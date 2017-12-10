@@ -1,0 +1,60 @@
+/*
+LeetCode 69:
+Implement int sqrt(int x).
+
+Compute and return the square root of x.
+
+x is guaranteed to be a non-negative integer.
+
+
+Example 1:
+
+Input: 4
+Output: 2
+Example 2:
+
+Input: 8
+Output: 2
+Explanation: The square root of 8 is 2.82842..., and since we want to return an integer, the decimal part wil
+
+
+Solution:
+Language: C++
+Tag: Binary Search
+*/
+
+class Solution {
+public:
+    int mySqrt(int x) {
+        if (x < 0) {
+            return -1;
+        }
+        /*
+        // 1. O(sqrt(x)) time + O(1) space
+        long i = 0; // in case of integer overflow
+        for (i = 0; i * i <= x; ++i) {
+            
+        }
+        return (int)(i - 1);
+        */
+        
+        /*
+        // 2. binary search -- O(log(x)) time + O(1) space
+        int start = 0, end = x;
+        while (start + 1 < end) {
+            int mid = (end - start) / 2 + start;
+            if ((long)mid * mid <= x) {
+                start = mid;
+            } else {
+                end = mid;
+            }
+        }
+        if ((long)end * end <= x) {
+            return end;
+        }
+        return start;
+        */
+        
+        // 3. Newton's Method
+    }
+};
